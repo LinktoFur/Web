@@ -9,568 +9,505 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
   <title>Moke</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.0/github-markdown.min.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" is:inline></script>
-  <script src="https://unpkg.com/lucide@latest" is:inline></script>
   <style is:global>
-    :root {
-      --bg-primary: #ffffff;
-      --bg-secondary: #f8fafc;
-      --bg-tertiary: #f1f5f9;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --border-color: #e2e8f0;
-      --accent: #3b82f6;
-      --accent-light: #eff6ff;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-    }
-    [data-theme="dark"] {
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-tertiary: #334155;
-      --text-primary: #f1f5f9;
-      --text-secondary: #cbd5e1;
-      --text-muted: #64748b;
-      --border-color: #334155;
-      --accent: #60a5fa;
-      --accent-light: #1e3a5f;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      min-height: 100vh;
-      transition: all 0.2s ease;
-    }
-    .app { display: flex; min-height: 100vh; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
-    /* Sidebar */
-    .sidebar {
-      width: 280px;
-      background: var(--bg-secondary);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
+    :root {
+      --c-bg: #0a0a0b;
+      --c-bg-soft: #141416;
+      --c-bg-mute: #1e1e21;
+      --c-border: #2e2e32;
+      --c-text: #ffffffde;
+      --c-text-2: #ffffffaa;
+      --c-text-3: #ffffff66;
+      --c-brand: #646cff;
+      --c-brand-light: #747bff;
+      --c-highlight-bg: rgba(100, 108, 255, 0.14);
+      --c-highlight-text: #a8b1ff;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --c-bg: #ffffff;
+      --c-bg-soft: #f9f9f9;
+      --c-bg-mute: #f1f1f1;
+      --c-border: #e2e2e3;
+      --c-text: #213547;
+      --c-text-2: #476582;
+      --c-text-3: #8e8e93;
+      --c-highlight-bg: rgba(100, 108, 255, 0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    html, body { 
+      height: 100%;
+      font-family: var(--font);
+      background: var(--c-bg);
+      color: var(--c-text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
       position: fixed;
-      height: 100vh;
+      top: 0;
+      left: 0;
+      right: 0;
       z-index: 100;
-      transition: transform 0.3s ease;
+      height: 64px;
+      background: var(--c-bg);
+      border-bottom: 1px solid var(--c-border);
     }
-    .sidebar-header {
+
+    .header-inner {
+      max-width: 1200px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 20px;
-      border-bottom: 1px solid var(--border-color);
+      justify-content: space-between;
     }
+
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 1.1rem;
+      gap: 8px;
+      font-size: 18px;
       font-weight: 600;
-      color: var(--text-primary);
+      color: var(--c-text);
+      text-decoration: none;
     }
-    .logo svg { color: var(--accent); }
-    .theme-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      background: var(--bg-tertiary);
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.2s;
-    }
-    .theme-btn:hover { background: var(--border-color); }
-    
-    /* Search */
-    .search-box { padding: 16px 20px; position: relative; }
-    .search-input-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      transition: all 0.2s;
-    }
-    .search-input-wrap:focus-within {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-light);
-    }
-    .search-input-wrap svg { color: var(--text-muted); width: 18px; height: 18px; }
-    .search-input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      color: var(--text-primary);
-      font-size: 14px;
-      outline: none;
-    }
-    .search-input::placeholder { color: var(--text-muted); }
-    .search-results {
-      position: absolute;
-      top: calc(100% + 4px);
-      left: 20px;
-      right: 20px;
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      max-height: 400px;
-      overflow-y: auto;
-      display: none;
-      z-index: 200;
-      box-shadow: var(--shadow-lg);
-    }
-    .search-results.active { display: block; }
-    .search-item {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border-color);
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .search-item:hover { background: var(--bg-secondary); }
-    .search-item:last-child { border-bottom: none; }
-    .search-item-title { font-weight: 500; color: var(--text-primary); margin-bottom: 4px; }
-    .search-item-path { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
-    .search-item-preview { font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.5; }
-    .highlight { background: #fef08a; padding: 1px 3px; border-radius: 2px; }
-    [data-theme="dark"] .highlight { background: #854d0e; color: #fef08a; }
-</style>
-</head>
-<body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <i data-lucide="book-open"></i>
-          <span>Moke</span>
-        </div>
-        <button class="theme-btn" id="themeToggle" title="切换主题">
-          <i data-lucide="moon" id="themeIcon"></i>
-        </button>
-      </div>
-      <div class="search-box">
-        <div class="search-input-wrap">
-          <i data-lucide="search"></i>
-          <input type="text" id="searchInput" placeholder="搜索文章..." class="search-input">
-        </div>
-        <div class="search-results" id="searchResults"></div>
-      </div>
-      <nav class="nav" id="categoryNav"><div class="nav-loading"><i data-lucide="loader-2" class="spin"></i><span>加载中...</span></div></nav>
-    </aside>
-    <main class="main">
-      <div class="main-header">
-        <button class="menu-btn" id="menuToggle"><i data-lucide="menu"></i></button>
-        <h1 class="page-title" id="currentCategory">选择分类</h1>
-      </div>
-      <div class="content" id="articleList">
-        <div class="empty-state">
-          <i data-lucide="folder-open"></i>
-          <h3>欢迎使用</h3>
-          <p>从左侧选择分类查看文章</p>
-        </div>
-      </div>
-      <div class="article-view" id="articleContent" style="display:none">
-        <button class="back-btn" id="backBtn"><i data-lucide="arrow-left"></i><span>返回</span></button>
-        <article class="markdown-body" id="markdownContent"></article>
-      </div>
-    </main>
-  </div>
-  <div class="overlay" id="overlay"></div>
 
-<style is:global>
-    /* Navigation */
-    .nav { flex: 1; overflow-y: auto; padding: 12px; }
-    .nav-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 40px; color: var(--text-muted); font-size: 14px; }
-    .spin { animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .nav-item {
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--c-brand);
+      border-radius: 6px;
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      margin-bottom: 4px;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-size: 14px;
-      transition: all 0.15s;
-    }
-    .nav-item:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-    .nav-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
-    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-    .nav-item.sub { padding-left: 38px; font-size: 13px; }
-    
-    /* Main Content */
-    .main { flex: 1; margin-left: 280px; min-height: 100vh; background: var(--bg-primary); }
-    .main-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px 32px;
-      border-bottom: 1px solid var(--border-color);
-      background: var(--bg-primary);
-      position: sticky;
-      top: 0;
-      z-index: 50;
-    }
-    .menu-btn {
-      display: none;
       align-items: center;
       justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .theme-toggle {
       width: 40px;
       height: 40px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--c-text-2);
       cursor: pointer;
-      color: var(--text-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s, background 0.2s;
     }
-    .page-title { font-size: 1.25rem; font-weight: 600; }
-    .content { padding: 24px 32px; }
-    
-    /* Empty State */
-    .empty-state {
+
+    .theme-toggle:hover {
+      color: var(--c-text);
+      background: var(--c-bg-mute);
+    }
+
+    .theme-toggle svg { width: 20px; height: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="logo" id="logoBtn">
+        <span class="logo-icon">M</span>
+        <span>Moke</span>
+      </a>
+      <button class="theme-toggle" id="themeToggle" title="切换主题">
+        <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+
+  <style is:global>
+    /* Home */
+    .home {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 80px 20px;
-      color: var(--text-muted);
-      text-align: center;
+      padding: 24px;
     }
-    .empty-state svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.5; }
-    .empty-state h3 { font-size: 1.1rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
-    .empty-state p { font-size: 14px; }
-    
-    /* Article Cards */
-    .cards { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
-    .card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
+
+    .home h1 {
+      font-size: clamp(40px, 8vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(120deg, var(--c-brand) 30%, #42d392);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
     }
-    .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .card-title { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
-    .card-meta { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
-    .card-meta svg { width: 14px; height: 14px; }
-    .card-preview {
+
+    .home p {
+      font-size: 18px;
+      color: var(--c-text-2);
+      margin-bottom: 48px;
+    }
+
+    /* Search */
+    .search-wrap {
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+    }
+
+    .search-box {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 20px;
+      height: 56px;
+      background: var(--c-bg-soft);
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--c-brand);
+      box-shadow: 0 0 0 4px var(--c-highlight-bg);
+    }
+
+    .search-box svg {
+      width: 20px;
+      height: 20px;
+      color: var(--c-text-3);
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      flex: 1;
+      height: 100%;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      color: var(--c-text);
+      outline: none;
+    }
+
+    .search-box input::placeholder { color: var(--c-text-3); }
+
+    .search-box kbd {
+      padding: 4px 8px;
+      font-size: 12px;
+      font-family: var(--font);
+      color: var(--c-text-3);
+      background: var(--c-bg-mute);
+      border: 1px solid var(--c-border);
+      border-radius: 4px;
+    }
+
+    .search-tip {
+      margin-top: 16px;
       font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      color: var(--c-text-3);
     }
-    
-    /* Article View */
-    .article-view { padding: 24px 32px; }
+
+    /* Results */
+    .search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--c-bg-soft);
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: none;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+
+    .search-results.show { display: block; }
+
+    .result-item {
+      display: block;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--c-border);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .result-item:last-child { border-bottom: none; }
+    .result-item:hover { background: var(--c-bg-mute); }
+
+    .result-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--c-text);
+      margin-bottom: 6px;
+    }
+
+    .result-path {
+      font-size: 12px;
+      color: var(--c-brand-light);
+      margin-bottom: 8px;
+    }
+
+    .result-preview {
+      font-size: 14px;
+      color: var(--c-text-2);
+      line-height: 1.5;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .result-preview mark {
+      background: var(--c-highlight-bg);
+      color: var(--c-highlight-text);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    .no-result {
+      padding: 32px;
+      text-align: center;
+      color: var(--c-text-3);
+    }
+
+    /* Article */
+    .article-page {
+      display: none;
+      min-height: 100vh;
+      padding: 96px 24px 48px;
+    }
+
+    .article-page.show { display: block; }
+
+    .article-inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
     .back-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--text-secondary);
+      gap: 6px;
+      padding: 8px 14px;
       font-size: 14px;
-      margin-bottom: 24px;
+      color: var(--c-text-2);
+      background: var(--c-bg-soft);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 32px;
       transition: all 0.2s;
     }
-    .back-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
-    .back-btn svg { width: 16px; height: 16px; }
-    .markdown-body { background: transparent !important; color: var(--text-primary) !important; max-width: 800px; }
-    [data-theme="dark"] .markdown-body { color-scheme: dark; }
-    
-    /* Overlay & Responsive */
-    .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
-    .overlay.active { display: block; }
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.visible { transform: translateX(0); }
-      .main { margin-left: 0; }
-      .menu-btn { display: flex; }
-      .content, .article-view { padding: 16px; }
-      .cards { grid-template-columns: 1fr; }
+
+    .back-btn:hover {
+      color: var(--c-text);
+      background: var(--c-bg-mute);
     }
-    .error { text-align: center; padding: 40px; color: #ef4444; }
+
+    .back-btn svg { width: 16px; height: 16px; }
+
+    .article-meta {
+      font-size: 14px;
+      color: var(--c-text-3);
+      margin-bottom: 12px;
+    }
+
+    .article-title {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 32px;
+    }
+
+    .markdown-body {
+      background: transparent !important;
+      color: var(--c-text) !important;
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    [data-theme="dark"] .markdown-body { color-scheme: dark; }
+
+    @media (max-width: 640px) {
+      .search-box kbd { display: none; }
+      .article-title { font-size: 28px; }
+    }
   </style>
 
+
+  <!-- Home View -->
+  <main class="home" id="homeView">
+    <h1>Moke</h1>
+    <p>搜索你想要的一切</p>
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="搜索文档..." autocomplete="off">
+        <kbd>⌘K</kbd>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <span class="search-tip">输入 2 个字符开始搜索</span>
+  </main>
+
+  <!-- Article View -->
+  <div class="article-page" id="articlePage">
+    <div class="article-inner">
+      <button class="back-btn" id="backBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        返回
+      </button>
+      <div class="article-meta" id="articleMeta"></div>
+      <h1 class="article-title" id="articleTitle"></h1>
+      <article class="markdown-body" id="articleBody"></article>
+    </div>
+  </div>
+
   <script is:inline define:vars={{ BASE_URL }}>
-    var API_BASE = BASE_URL;
-    var allArticles = [];
-    var currentArticles = [];
-    var sidebar = document.getElementById('sidebar');
-    var overlay = document.getElementById('overlay');
-    var searchInput = document.getElementById('searchInput');
-    var searchResults = document.getElementById('searchResults');
-    var searchTimeout;
+    const API = BASE_URL;
+    let articles = [];
+    const $ = id => document.getElementById(id);
+    const homeView = $('homeView');
+    const articlePage = $('articlePage');
+    const searchInput = $('searchInput');
+    const searchResults = $('searchResults');
+    let timer;
 
-    // Init icons
-    lucide.createIcons();
+    // Theme
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.dataset.theme = theme;
+    updateThemeIcon(theme);
 
-    function initTheme() {
-      var savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      updateThemeIcon(savedTheme);
+    $('themeToggle').onclick = () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      updateThemeIcon(next);
+    };
+
+    function updateThemeIcon(t) {
+      $('moonIcon').style.display = t === 'dark' ? 'block' : 'none';
+      $('sunIcon').style.display = t === 'light' ? 'block' : 'none';
     }
 
-    function updateThemeIcon(theme) {
-      var icon = document.getElementById('themeIcon');
-      if (icon) icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-      lucide.createIcons();
+    // Navigation
+    $('logoBtn').onclick = e => { e.preventDefault(); goHome(); };
+    $('backBtn').onclick = goHome;
+
+    function goHome() {
+      homeView.style.display = 'flex';
+      articlePage.classList.remove('show');
+      searchInput.focus();
     }
 
-    document.getElementById('themeToggle').addEventListener('click', function() {
-      var current = document.documentElement.getAttribute('data-theme');
-      var newTheme = current === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      updateThemeIcon(newTheme);
-    });
+    function showArticle(a) {
+      homeView.style.display = 'none';
+      articlePage.classList.add('show');
+      $('articleMeta').textContent = a.path;
+      $('articleTitle').textContent = a.name.replace('.md', '');
+      $('articleBody').innerHTML = marked.parse(a.content);
+      searchResults.classList.remove('show');
+      window.scrollTo(0, 0);
+    }
 
-    document.getElementById('menuToggle').addEventListener('click', function() {
-      sidebar.classList.toggle('visible');
-      overlay.classList.toggle('active');
-    });
-
-    overlay.addEventListener('click', function() {
-      sidebar.classList.remove('visible');
-      overlay.classList.remove('active');
-    });
-
-    function loadCategories() {
-      var nav = document.getElementById('categoryNav');
-      fetch(API_BASE + 'api.php')
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (data.folders && data.folders.length > 0) {
-            var tree = {};
-            data.folders.forEach(function(folder) {
-              var parts = folder.split('/');
-              var current = tree;
-              parts.forEach(function(part, index) {
-                if (!current[part]) {
-                  current[part] = { _path: parts.slice(0, index + 1).join('/'), _children: {} };
-                }
-                current = current[part]._children;
-              });
+    // Load articles
+    fetch(API + 'api.php').then(r => r.json()).then(data => {
+      if (!data.folders) return;
+      const loaded = {};
+      data.folders.forEach(folder => {
+        fetch(API + 'api.php?category=' + encodeURIComponent(folder))
+          .then(r => r.json())
+          .then(d => {
+            if (!d.articles) return;
+            d.articles.forEach(a => {
+              const key = a.path + '/' + a.name;
+              if (!loaded[key]) {
+                loaded[key] = true;
+                articles.push({ path: a.path, name: a.name, content: a.content });
+              }
             });
-
-            function renderTree(obj, level) {
-              level = level || 0;
-              var html = '';
-              Object.keys(obj).forEach(function(key) {
-                var item = obj[key];
-                var isSub = level > 0;
-                html += '<div class="nav-item' + (isSub ? ' sub' : '') + '" data-category="' + item._path + '">';
-                html += '<i data-lucide="' + (isSub ? 'file-text' : 'folder') + '"></i>';
-                html += '<span>' + key + '</span></div>';
-                if (Object.keys(item._children).length > 0) {
-                  html += renderTree(item._children, level + 1);
-                }
-              });
-              return html;
-            }
-
-            nav.innerHTML = renderTree(tree, 0);
-            lucide.createIcons();
-
-            nav.querySelectorAll('.nav-item').forEach(function(item) {
-              item.addEventListener('click', function() {
-                nav.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); });
-                item.classList.add('active');
-                loadArticles(item.getAttribute('data-category'));
-                if (window.innerWidth <= 768) {
-                  sidebar.classList.remove('visible');
-                  overlay.classList.remove('active');
-                }
-              });
-            });
-
-            preloadAllArticles(data.folders);
-          } else {
-            nav.innerHTML = '<div class="empty-state"><i data-lucide="folder-x"></i><p>暂无分类</p></div>';
-            lucide.createIcons();
-          }
-        })
-        .catch(function(error) {
-          nav.innerHTML = '<div class="error">加载失败</div>';
-          console.error(error);
-        });
-    }
-
-    function preloadAllArticles(folders) {
-      allArticles = [];
-      var loadedKeys = {};
-      folders.forEach(function(folder) {
-        fetch(API_BASE + 'api.php?category=' + encodeURIComponent(folder))
-          .then(function(res) { return res.json(); })
-          .then(function(data) {
-            if (data.articles) {
-              data.articles.forEach(function(article) {
-                var key = article.path + '/' + article.name;
-                if (!loadedKeys[key]) {
-                  loadedKeys[key] = true;
-                  allArticles.push({ path: article.path, name: article.name, content: article.content, category: article.path });
-                }
-              });
-            }
-          })
-          .catch(function(e) { console.error('预加载失败:', folder, e); });
+          });
       });
-    }
-
-    function loadArticles(category) {
-      var listEl = document.getElementById('articleList');
-      var contentEl = document.getElementById('articleContent');
-      var categoryTitle = document.getElementById('currentCategory');
-
-      contentEl.style.display = 'none';
-      listEl.style.display = 'block';
-      categoryTitle.textContent = category;
-      listEl.innerHTML = '<div class="empty-state"><i data-lucide="loader-2" class="spin"></i><p>加载中...</p></div>';
-      lucide.createIcons();
-
-      fetch(API_BASE + 'api.php?category=' + encodeURIComponent(category))
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          if (data.error) {
-            listEl.innerHTML = '<div class="error">' + data.error + '</div>';
-            return;
-          }
-          if (data.articles && data.articles.length > 0) {
-            currentArticles = data.articles.filter(function(article) {
-              return article.path === category;
-            });
-            if (currentArticles.length === 0) {
-              listEl.innerHTML = '<div class="empty-state"><i data-lucide="file-x"></i><p>暂无文章</p></div>';
-              lucide.createIcons();
-              return;
-            }
-            var html = '<div class="cards">';
-            currentArticles.forEach(function(article, index) {
-              var preview = article.content.replace(/^#.*$/gm, '').replace(/[#*`\[\]]/g, '').trim().substring(0, 120);
-              html += '<div class="card" data-index="' + index + '">';
-              html += '<div class="card-title">' + article.name.replace('.md', '') + '</div>';
-              html += '<div class="card-meta"><i data-lucide="folder"></i>' + article.path + '</div>';
-              html += '<div class="card-preview">' + preview + '...</div></div>';
-            });
-            html += '</div>';
-            listEl.innerHTML = html;
-            lucide.createIcons();
-            listEl.querySelectorAll('.card').forEach(function(card) {
-              card.addEventListener('click', function() {
-                showArticle(parseInt(card.getAttribute('data-index')));
-              });
-            });
-          } else {
-            listEl.innerHTML = '<div class="empty-state"><i data-lucide="file-x"></i><p>暂无文章</p></div>';
-            lucide.createIcons();
-          }
-        })
-        .catch(function(error) {
-          listEl.innerHTML = '<div class="error">加载失败</div>';
-          console.error(error);
-        });
-    }
-
-    function showArticle(index) {
-      var article = currentArticles[index];
-      if (!article) return;
-      document.getElementById('articleList').style.display = 'none';
-      document.getElementById('articleContent').style.display = 'block';
-      document.getElementById('markdownContent').innerHTML = marked.parse(article.content);
-    }
-
-    function showSearchArticle(article) {
-      currentArticles = [article];
-      document.getElementById('currentCategory').textContent = article.category;
-      showArticle(0);
-      searchResults.classList.remove('active');
-      searchInput.value = '';
-      if (window.innerWidth <= 768) {
-        sidebar.classList.remove('visible');
-        overlay.classList.remove('active');
-      }
-    }
-
-    document.getElementById('backBtn').addEventListener('click', function() {
-      document.getElementById('articleList').style.display = 'block';
-      document.getElementById('articleContent').style.display = 'none';
     });
 
-    searchInput.addEventListener('input', function(e) {
-      clearTimeout(searchTimeout);
-      var query = e.target.value.trim();
-      if (query.length < 2) { searchResults.classList.remove('active'); return; }
-      searchTimeout = setTimeout(function() { performSearch(query); }, 300);
-    });
+    // Search
+    searchInput.oninput = e => {
+      clearTimeout(timer);
+      const q = e.target.value.trim();
+      if (q.length < 2) { searchResults.classList.remove('show'); return; }
+      timer = setTimeout(() => search(q), 150);
+    };
 
-    searchInput.addEventListener('focus', function() {
-      if (searchInput.value.trim().length >= 2) searchResults.classList.add('active');
-    });
+    searchInput.onfocus = () => {
+      if (searchInput.value.trim().length >= 2) searchResults.classList.add('show');
+    };
 
-    document.addEventListener('click', function(e) {
-      var wrap = document.querySelector('.search-box');
-      if (!wrap.contains(e.target)) searchResults.classList.remove('active');
-    });
+    document.onclick = e => {
+      if (!e.target.closest('.search-wrap')) searchResults.classList.remove('show');
+    };
 
-    function escapeRegex(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+    document.onkeydown = e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); goHome(); }
+      if (e.key === 'Escape') searchResults.classList.remove('show');
+    };
 
-    function performSearch(query) {
-      var lowerQuery = query.toLowerCase();
-      var results = allArticles.filter(function(a) {
-        return a.name.toLowerCase().includes(lowerQuery) || a.content.toLowerCase().includes(lowerQuery);
-      });
+    function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-      if (results.length === 0) {
-        searchResults.innerHTML = '<div class="search-item"><div class="search-item-title">未找到结果</div></div>';
+    function search(q) {
+      const lq = q.toLowerCase();
+      const res = articles.filter(a => 
+        a.name.toLowerCase().includes(lq) || a.content.toLowerCase().includes(lq)
+      );
+
+      if (!res.length) {
+        searchResults.innerHTML = '<div class="no-result">没有找到结果</div>';
       } else {
-        var html = '';
-        results.slice(0, 10).forEach(function(article, idx) {
-          var preview = '';
-          var lc = article.content.toLowerCase();
-          var mi = lc.indexOf(lowerQuery);
-          if (mi !== -1) {
-            var s = Math.max(0, mi - 30), e = Math.min(article.content.length, mi + query.length + 50);
-            preview = (s > 0 ? '...' : '') + article.content.substring(s, e).replace(/\n/g, ' ') + (e < article.content.length ? '...' : '');
-            preview = preview.replace(new RegExp('(' + escapeRegex(query) + ')', 'gi'), '<span class="highlight">$1</span>');
+        searchResults.innerHTML = res.slice(0, 8).map((a, i) => {
+          let preview = '';
+          const idx = a.content.toLowerCase().indexOf(lq);
+          if (idx !== -1) {
+            const s = Math.max(0, idx - 30);
+            const e = Math.min(a.content.length, idx + q.length + 50);
+            preview = (s > 0 ? '...' : '') + 
+              a.content.slice(s, e).replace(/\n/g, ' ').replace(
+                new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>'
+              ) + (e < a.content.length ? '...' : '');
           }
-          html += '<div class="search-item" data-idx="' + idx + '">';
-          html += '<div class="search-item-title">' + article.name.replace('.md', '') + '</div>';
-          html += '<div class="search-item-path"><i data-lucide="folder" style="width:12px;height:12px"></i>' + article.category + '</div>';
-          if (preview) html += '<div class="search-item-preview">' + preview + '</div>';
-          html += '</div>';
-        });
-        searchResults.innerHTML = html;
-        lucide.createIcons();
-        searchResults.querySelectorAll('.search-item').forEach(function(item, idx) {
-          item.addEventListener('click', function() { if (results[idx]) showSearchArticle(results[idx]); });
+          return `<div class="result-item" data-i="${i}">
+            <div class="result-title">${a.name.replace('.md', '')}</div>
+            <div class="result-path">${a.path}</div>
+            ${preview ? `<div class="result-preview">${preview}</div>` : ''}
+          </div>`;
+        }).join('');
+
+        searchResults.querySelectorAll('.result-item').forEach((el, i) => {
+          el.onclick = () => res[i] && showArticle(res[i]);
         });
       }
-      searchResults.classList.add('active');
+      searchResults.classList.add('show');
     }
 
-    initTheme();
-    loadCategories();
+    searchInput.focus();
   </script>
 </body>
 </html>
