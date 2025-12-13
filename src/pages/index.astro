@@ -615,7 +615,12 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       $('articleMeta').textContent = a.path;
       $('articleTitle').textContent = a.name.replace('.md', '');
       
-      let html = marked.parse(a.content);
+      // Remove search tag before display
+      let content = a.content;
+      if (content.trim().startsWith('#need114514')) {
+        content = content.replace('#need114514', '').replace(/^\n+/, '');
+      }
+      let html = marked.parse(content);
       // Highlight and mark keyword for scrolling
       if (keyword) {
         const escKeyword = esc(keyword);
@@ -714,13 +719,29 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       return matches;
     }
 
+    const SEARCH_TAG = '#need114514';
+
+    function isSearchable(content) {
+      return content.trim().startsWith(SEARCH_TAG);
+    }
+
+    function getDisplayContent(content) {
+      if (content.trim().startsWith(SEARCH_TAG)) {
+        return content.replace(SEARCH_TAG, '').replace(/^\n+/, '');
+      }
+      return content;
+    }
+
     function search(q) {
       const lq = q.toLowerCase();
       const results = [];
       
       articles.forEach(a => {
+        if (!isSearchable(a.content)) return;
+        
+        const displayContent = getDisplayContent(a.content);
         const nameMatch = a.name.toLowerCase().includes(lq);
-        const matches = getAllMatches(a.content, q);
+        const matches = getAllMatches(displayContent, q);
         
         if (matches.length > 0) {
           matches.forEach(m => {
