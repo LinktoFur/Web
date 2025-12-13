@@ -693,39 +693,58 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         .trim();
     }
 
-    function getPreview(content, query) {
+    function getAllMatches(content, query) {
       const clean = stripMarkdown(content);
       const lc = clean.toLowerCase();
-      const idx = lc.indexOf(query.toLowerCase());
-      if (idx === -1) return '';
-      const start = Math.max(0, idx - 30);
-      const end = Math.min(clean.length, idx + query.length + 50);
-      let text = clean.slice(start, end);
-      if (start > 0) text = '...' + text;
-      if (end < clean.length) text = text + '...';
-      return text.replace(new RegExp('(' + esc(query) + ')', 'gi'), '<mark>$1</mark>');
+      const lq = query.toLowerCase();
+      const matches = [];
+      let pos = 0;
+      while (pos < lc.length) {
+        const idx = lc.indexOf(lq, pos);
+        if (idx === -1) break;
+        const start = Math.max(0, idx - 30);
+        const end = Math.min(clean.length, idx + query.length + 50);
+        let text = clean.slice(start, end);
+        if (start > 0) text = '...' + text;
+        if (end < clean.length) text = text + '...';
+        text = text.replace(new RegExp('(' + esc(query) + ')', 'gi'), '<mark>$1</mark>');
+        matches.push({ idx, preview: text });
+        pos = idx + query.length;
+      }
+      return matches;
     }
 
     function search(q) {
       const lq = q.toLowerCase();
-      const res = articles.filter(a => 
-        a.name.toLowerCase().includes(lq) || a.content.toLowerCase().includes(lq)
-      );
+      const results = [];
+      
+      articles.forEach(a => {
+        const nameMatch = a.name.toLowerCase().includes(lq);
+        const matches = getAllMatches(a.content, q);
+        
+        if (matches.length > 0) {
+          matches.forEach(m => {
+            results.push({ article: a, preview: m.preview, matchIdx: m.idx });
+          });
+        } else if (nameMatch) {
+          results.push({ article: a, preview: '', matchIdx: -1 });
+        }
+      });
 
-      if (!res.length) {
+      if (!results.length) {
         searchResults.innerHTML = '<div class="no-result">没有找到结果</div>';
       } else {
-        searchResults.innerHTML = res.slice(0, 8).map((a, i) => {
-          const preview = getPreview(a.content, q);
+        searchResults.innerHTML = results.slice(0, 10).map((r, i) => {
           return '<div class="result-item" data-i="' + i + '">' +
-            '<div class="result-title">' + a.name.replace('.md', '') + '</div>' +
-            '<div class="result-path">' + a.path + '</div>' +
-            (preview ? '<div class="result-preview">' + preview + '</div>' : '') +
+            '<div class="result-title">' + r.article.name.replace('.md', '') + '</div>' +
+            '<div class="result-path">' + r.article.path + '</div>' +
+            (r.preview ? '<div class="result-preview">' + r.preview + '</div>' : '') +
           '</div>';
         }).join('');
 
+        const resRef = results;
         searchResults.querySelectorAll('.result-item').forEach((el, i) => {
-          el.onclick = () => res[i] && showArticle(res[i], null, q);
+          el.onclick = () => resRef[i] && showArticle(resRef[i].article, null, q);
         });
       }
       searchResults.classList.add('show');
