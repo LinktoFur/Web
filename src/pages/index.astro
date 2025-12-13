@@ -419,13 +419,18 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     function preloadAllArticles(folders) {
       allArticles = [];
+      var loadedKeys = {};
       folders.forEach(function(folder) {
         fetch(API_BASE + 'api.php?category=' + encodeURIComponent(folder))
           .then(function(res) { return res.json(); })
           .then(function(data) {
             if (data.articles) {
               data.articles.forEach(function(article) {
-                allArticles.push({ path: article.path, name: article.name, content: article.content, category: folder });
+                var key = article.path + '/' + article.name;
+                if (!loadedKeys[key]) {
+                  loadedKeys[key] = true;
+                  allArticles.push({ path: article.path, name: article.name, content: article.content, category: article.path });
+                }
               });
             }
           })
@@ -452,9 +457,16 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
             return;
           }
           if (data.articles && data.articles.length > 0) {
-            currentArticles = data.articles;
+            currentArticles = data.articles.filter(function(article) {
+              return article.path === category;
+            });
+            if (currentArticles.length === 0) {
+              listEl.innerHTML = '<div class="empty-state"><i data-lucide="file-x"></i><p>暂无文章</p></div>';
+              lucide.createIcons();
+              return;
+            }
             var html = '<div class="cards">';
-            data.articles.forEach(function(article, index) {
+            currentArticles.forEach(function(article, index) {
               var preview = article.content.replace(/^#.*$/gm, '').replace(/[#*`\[\]]/g, '').trim().substring(0, 120);
               html += '<div class="card" data-index="' + index + '">';
               html += '<div class="card-title">' + article.name.replace('.md', '') + '</div>';
