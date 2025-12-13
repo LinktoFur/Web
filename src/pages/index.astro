@@ -24,7 +24,9 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       --c-brand-light: #747bff;
       --c-highlight-bg: rgba(100, 108, 255, 0.14);
       --c-highlight-text: #a8b1ff;
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --sidebar-width: 260px;
+      --header-height: 56px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     [data-theme="light"] {
@@ -49,40 +51,39 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     }
 
     /* Header */
-    header {
+    .header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      z-index: 100;
-      height: 64px;
+      height: var(--header-height);
       background: var(--c-bg);
       border-bottom: 1px solid var(--c-border);
-    }
-
-    .header-inner {
-      max-width: 1200px;
-      height: 100%;
-      margin: 0 auto;
-      padding: 0 24px;
+      z-index: 200;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .header-left {
+      width: var(--sidebar-width);
+      flex-shrink: 0;
+      padding-right: 20px;
     }
 
     .logo {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 600;
       color: var(--c-text);
       text-decoration: none;
     }
 
     .logo-icon {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       background: var(--c-brand);
       border-radius: 6px;
       display: flex;
@@ -90,12 +91,119 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       justify-content: center;
       color: white;
       font-weight: 700;
+      font-size: 13px;
+    }
+
+    .header-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 0 20px;
+    }
+
+    .header-right {
+      flex-shrink: 0;
+    }
+
+    /* Search */
+    .search-wrap {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      height: 40px;
+      background: var(--c-bg-soft);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--c-brand);
+      box-shadow: 0 0 0 3px var(--c-highlight-bg);
+    }
+
+    .search-box svg {
+      width: 16px;
+      height: 16px;
+      color: var(--c-text-3);
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      flex: 1;
+      height: 100%;
+      border: none;
+      background: transparent;
       font-size: 14px;
+      color: var(--c-text);
+      outline: none;
+    }
+
+    .search-box input::placeholder { color: var(--c-text-3); }
+
+    .search-box kbd {
+      padding: 3px 7px;
+      font-size: 11px;
+      color: var(--c-text-3);
+      background: var(--c-bg-mute);
+      border: 1px solid var(--c-border);
+      border-radius: 4px;
+    }
+
+    .search-results {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: var(--c-bg-soft);
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+
+    .search-results.show { display: block; }
+
+    .result-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--c-border);
+    }
+
+    .result-item:last-child { border-bottom: none; }
+    .result-item:hover { background: var(--c-bg-mute); }
+
+    .result-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--c-text);
+      margin-bottom: 4px;
+    }
+
+    .result-path {
+      font-size: 12px;
+      color: var(--c-brand-light);
+    }
+
+    .no-result {
+      padding: 24px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--c-text-3);
     }
 
     .theme-toggle {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border: none;
       background: transparent;
       color: var(--c-text-2);
@@ -104,7 +212,6 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.2s, background 0.2s;
     }
 
     .theme-toggle:hover {
@@ -112,16 +219,31 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       background: var(--c-bg-mute);
     }
 
-    .theme-toggle svg { width: 20px; height: 20px; }
+    .theme-toggle svg { width: 18px; height: 18px; }
   </style>
 </head>
 <body>
-  <header>
-    <div class="header-inner">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
       <a href="/" class="logo" id="logoBtn">
         <span class="logo-icon">M</span>
         <span>Moke</span>
       </a>
+    </div>
+    <div class="header-center">
+      <div class="search-wrap">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="搜索文档..." autocomplete="off">
+          <kbd>⌘K</kbd>
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+    <div class="header-right">
       <button class="theme-toggle" id="themeToggle" title="切换主题">
         <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -135,294 +257,133 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
 
   <style is:global>
-    /* Home */
-    .home {
-      min-height: 100vh;
+    /* Layout */
+    .layout {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      padding-top: var(--header-height);
     }
 
-    .home h1 {
-      font-size: clamp(40px, 8vw, 72px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      background: linear-gradient(120deg, var(--c-brand) 30%, #42d392);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 16px;
-    }
-
-    .home p {
-      font-size: 18px;
-      color: var(--c-text-2);
-      margin-bottom: 48px;
-    }
-
-    /* Search */
-    .search-wrap {
-      width: 100%;
-      max-width: 560px;
-      position: relative;
-    }
-
-    .search-box {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 20px;
-      height: 56px;
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      height: calc(100vh - var(--header-height));
+      position: fixed;
+      left: 0;
+      top: var(--header-height);
       background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 12px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      border-right: 1px solid var(--c-border);
+      overflow-y: auto;
+      padding: 12px 8px;
     }
 
-    .search-box:focus-within {
-      border-color: var(--c-brand);
-      box-shadow: 0 0 0 4px var(--c-highlight-bg);
-    }
+    .nav-group { margin-bottom: 8px; }
 
-    .search-box svg {
-      width: 20px;
-      height: 20px;
-      color: var(--c-text-3);
-      flex-shrink: 0;
-    }
-
-    .search-box input {
-      flex: 1;
-      height: 100%;
-      border: none;
-      background: transparent;
-      font-size: 16px;
-      color: var(--c-text);
-      outline: none;
-    }
-
-    .search-box input::placeholder { color: var(--c-text-3); }
-
-    .search-box kbd {
-      padding: 4px 8px;
+    .nav-group-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
       font-size: 12px;
-      font-family: var(--font);
-      color: var(--c-text-3);
-      background: var(--c-bg-mute);
-      border: 1px solid var(--c-border);
-      border-radius: 4px;
-    }
-
-    .search-tip {
-      margin-top: 16px;
-      font-size: 14px;
-      color: var(--c-text-3);
-    }
-
-    .browse-btn {
-      margin-top: 24px;
-      padding: 12px 24px;
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--c-text);
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .browse-btn:hover {
-      background: var(--c-bg-mute);
-      border-color: var(--c-brand);
-    }
-
-    /* Browse Page */
-    .browse-page {
-      display: none;
-      min-height: 100vh;
-      padding: 96px 24px 48px;
-    }
-
-    .browse-page.show { display: block; }
-
-    .browse-inner {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .browse-title {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 32px;
-    }
-
-    .folder-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .folder-group {
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .folder-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 16px 20px;
-      font-size: 16px;
       font-weight: 600;
-      color: var(--c-text);
-      background: var(--c-bg-mute);
+      color: var(--c-text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       cursor: pointer;
-      transition: background 0.2s;
+      border-radius: 6px;
     }
 
-    .folder-header:hover { background: var(--c-border); }
+    .nav-group-title:hover { background: var(--c-bg-mute); }
 
-    .folder-header svg {
-      width: 18px;
-      height: 18px;
+    .nav-group-title svg {
+      width: 14px;
+      height: 14px;
       color: var(--c-brand);
     }
 
-    .folder-articles { padding: 8px; }
+    .nav-group-items { padding-left: 8px; }
 
-    .article-item {
+    .nav-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px 16px;
-      font-size: 15px;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
       color: var(--c-text-2);
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .article-item:hover {
+    .nav-item:hover {
       background: var(--c-bg-mute);
       color: var(--c-text);
     }
 
-    .article-item svg {
-      width: 16px;
-      height: 16px;
+    .nav-item.active {
+      background: var(--c-highlight-bg);
+      color: var(--c-brand);
+    }
+
+    .nav-item svg {
+      width: 14px;
+      height: 14px;
       color: var(--c-text-3);
-      color: var(--c-text-3);
+      flex-shrink: 0;
     }
 
-    /* Results */
-    .search-results {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 12px;
-      max-height: 420px;
-      overflow-y: auto;
-      display: none;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
-    }
+    .nav-item.active svg { color: var(--c-brand); }
 
-    .search-results.show { display: block; }
-
-    .result-item {
-      display: block;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--c-border);
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .result-item:last-child { border-bottom: none; }
-    .result-item:hover { background: var(--c-bg-mute); }
-
-    .result-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--c-text);
-      margin-bottom: 6px;
-    }
-
-    .result-path {
-      font-size: 12px;
-      color: var(--c-brand-light);
-      margin-bottom: 8px;
-    }
-
-    .result-preview {
-      font-size: 14px;
-      color: var(--c-text-2);
-      line-height: 1.5;
+    .nav-item-text {
+      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
     }
 
-    .result-preview mark {
-      background: var(--c-highlight-bg);
-      color: var(--c-highlight-text);
-      padding: 1px 4px;
-      border-radius: 3px;
+    /* Main */
+    .main {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      min-height: calc(100vh - var(--header-height));
     }
 
-    .no-result {
-      padding: 32px;
-      text-align: center;
+    .welcome {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    .welcome-inner { text-align: center; }
+
+    .welcome h1 {
+      font-size: 48px;
+      font-weight: 700;
+      background: linear-gradient(120deg, var(--c-brand) 30%, #42d392);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    .welcome p {
+      font-size: 16px;
       color: var(--c-text-3);
     }
 
-    /* Article */
-    .article-page {
+    .article-view {
       display: none;
-      min-height: 100vh;
-      padding: 96px 24px 48px;
+      padding: 40px 32px;
     }
 
-    .article-page.show { display: block; }
+    .article-view.show { display: block; }
 
     .article-inner {
-      max-width: 720px;
+      max-width: 760px;
       margin: 0 auto;
     }
 
-    .back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      font-size: 14px;
-      color: var(--c-text-2);
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-      cursor: pointer;
-      margin-bottom: 32px;
-      transition: all 0.2s;
-    }
-
-    .back-btn:hover {
-      color: var(--c-text);
-      background: var(--c-bg-mute);
-    }
-
-    .back-btn svg { width: 16px; height: 16px; }
-
     .article-meta {
-      font-size: 14px;
-      color: var(--c-text-3);
+      font-size: 13px;
+      color: var(--c-brand-light);
       margin-bottom: 12px;
     }
 
@@ -442,71 +403,39 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     [data-theme="dark"] .markdown-body { color-scheme: dark; }
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
+      .header-left { width: auto; }
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
       .search-box kbd { display: none; }
       .article-title { font-size: 28px; }
     }
   </style>
 
-
-  <!-- Home View -->
-  <main class="home" id="homeView">
-    <h1>Moke</h1>
-    <p>搜索你想要的一切</p>
-    <div class="search-wrap">
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input type="text" id="searchInput" placeholder="搜索文档..." autocomplete="off">
-        <kbd>⌘K</kbd>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar"></aside>
+    <main class="main">
+      <div class="welcome" id="welcomeView">
+        <div class="welcome-inner">
+          <h1>Moke</h1>
+          <p>从左侧选择文档开始阅读</p>
+        </div>
       </div>
-      <div class="search-results" id="searchResults"></div>
-    </div>
-    <span class="search-tip">输入 2 个字符开始搜索</span>
-    <button class="browse-btn" id="browseBtn">浏览全部文档</button>
-  </main>
-
-  <!-- Browse View -->
-  <div class="browse-page" id="browsePage">
-    <div class="browse-inner">
-      <button class="back-btn" id="browseBackBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-        返回
-      </button>
-      <h1 class="browse-title">全部文档</h1>
-      <div class="folder-list" id="folderList"></div>
-    </div>
+      <article class="article-view" id="articleView">
+        <div class="article-inner">
+          <div class="article-meta" id="articleMeta"></div>
+          <h1 class="article-title" id="articleTitle"></h1>
+          <div class="markdown-body" id="articleBody"></div>
+        </div>
+      </article>
+    </main>
   </div>
 
-  <!-- Article View -->
-  <div class="article-page" id="articlePage">
-    <div class="article-inner">
-      <button class="back-btn" id="backBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-        返回
-      </button>
-      <div class="article-meta" id="articleMeta"></div>
-      <h1 class="article-title" id="articleTitle"></h1>
-      <article class="markdown-body" id="articleBody"></article>
-    </div>
-  </div>
 
   <script is:inline define:vars={{ BASE_URL }}>
     const API = BASE_URL;
     let articles = [];
-    let foldersData = [];
     const $ = id => document.getElementById(id);
-    const homeView = $('homeView');
-    const articlePage = $('articlePage');
-    const browsePage = $('browsePage');
-    const searchInput = $('searchInput');
-    const searchResults = $('searchResults');
-    let timer;
 
     // Theme
     const theme = localStorage.getItem('theme') || 'dark';
@@ -525,100 +454,89 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       $('sunIcon').style.display = t === 'light' ? 'block' : 'none';
     }
 
-    // Navigation
-    $('logoBtn').onclick = e => { e.preventDefault(); goHome(); };
-    $('backBtn').onclick = showBrowse;
-    $('browseBackBtn').onclick = goHome;
-    $('browseBtn').onclick = showBrowse;
+    // Load articles
+    fetch(API + 'api.php').then(r => r.json()).then(data => {
+      if (!data.folders) return;
+      const loaded = {};
+      let pending = data.folders.length;
 
-    function goHome() {
-      homeView.style.display = 'flex';
-      articlePage.classList.remove('show');
-      browsePage.classList.remove('show');
-      searchInput.focus();
-    }
+      data.folders.forEach(folder => {
+        fetch(API + 'api.php?category=' + encodeURIComponent(folder))
+          .then(r => r.json())
+          .then(d => {
+            if (d.articles) {
+              d.articles.forEach(a => {
+                const key = a.path + '/' + a.name;
+                if (!loaded[key]) {
+                  loaded[key] = true;
+                  articles.push({ path: a.path, name: a.name, content: a.content });
+                }
+              });
+            }
+            pending--;
+            if (pending === 0) renderNav();
+          });
+      });
+    });
 
-    function showArticle(a) {
-      homeView.style.display = 'none';
-      browsePage.classList.remove('show');
-      articlePage.classList.add('show');
-      $('articleMeta').textContent = a.path;
-      $('articleTitle').textContent = a.name.replace('.md', '');
-      $('articleBody').innerHTML = marked.parse(a.content);
-      searchResults.classList.remove('show');
-      window.scrollTo(0, 0);
-    }
-
-    function showBrowse() {
-      homeView.style.display = 'none';
-      articlePage.classList.remove('show');
-      browsePage.classList.add('show');
-      renderFolders();
-      window.scrollTo(0, 0);
-    }
-
-    function renderFolders() {
+    function renderNav() {
       const grouped = {};
       articles.forEach(a => {
         if (!grouped[a.path]) grouped[a.path] = [];
         grouped[a.path].push(a);
       });
 
-      const folderList = $('folderList');
-      folderList.innerHTML = Object.keys(grouped).map(path => `
-        <div class="folder-group">
-          <div class="folder-header">
+      const sidebar = $('sidebar');
+      sidebar.innerHTML = Object.keys(grouped).map(path => `
+        <div class="nav-group">
+          <div class="nav-group-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
             </svg>
-            ${path}
+            <span>${path}</span>
           </div>
-          <div class="folder-articles">
+          <div class="nav-group-items">
             ${grouped[path].map((a, i) => `
-              <div class="article-item" data-path="${path}" data-idx="${i}">
+              <div class="nav-item" data-path="${path}" data-idx="${i}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14 2 14 8 20 8"/>
                 </svg>
-                ${a.name.replace('.md', '')}
+                <span class="nav-item-text">${a.name.replace('.md', '')}</span>
               </div>
             `).join('')}
           </div>
         </div>
       `).join('');
 
-      folderList.querySelectorAll('.article-item').forEach(el => {
+      sidebar.querySelectorAll('.nav-item').forEach(el => {
         el.onclick = () => {
           const path = el.dataset.path;
           const idx = parseInt(el.dataset.idx);
-          const a = grouped[path][idx];
-          if (a) showArticle(a);
+          showArticle(grouped[path][idx], el);
         };
       });
     }
 
-    // Load articles
-    fetch(API + 'api.php').then(r => r.json()).then(data => {
-      if (!data.folders) return;
-      foldersData = data.folders;
-      const loaded = {};
-      data.folders.forEach(folder => {
-        fetch(API + 'api.php?category=' + encodeURIComponent(folder))
-          .then(r => r.json())
-          .then(d => {
-            if (!d.articles) return;
-            d.articles.forEach(a => {
-              const key = a.path + '/' + a.name;
-              if (!loaded[key]) {
-                loaded[key] = true;
-                articles.push({ path: a.path, name: a.name, content: a.content });
-              }
-            });
-          });
-      });
-    });
+    function showArticle(a, navEl) {
+      $('welcomeView').style.display = 'none';
+      $('articleView').classList.add('show');
+      $('articleMeta').textContent = a.path;
+      $('articleTitle').textContent = a.name.replace('.md', '');
+      $('articleBody').innerHTML = marked.parse(a.content);
+
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      if (navEl) navEl.classList.add('active');
+
+      $('searchResults').classList.remove('show');
+      window.scrollTo(0, 0);
+    }
 
     // Search
+    const searchInput = $('searchInput');
+    const searchResults = $('searchResults');
+    let timer;
+
     searchInput.oninput = e => {
       clearTimeout(timer);
       const q = e.target.value.trim();
@@ -635,7 +553,10 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     };
 
     document.onkeydown = e => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); goHome(); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+      }
       if (e.key === 'Escape') searchResults.classList.remove('show');
     };
 
@@ -650,26 +571,15 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       if (!res.length) {
         searchResults.innerHTML = '<div class="no-result">没有找到结果</div>';
       } else {
-        searchResults.innerHTML = res.slice(0, 8).map((a, i) => {
-          let preview = '';
-          const idx = a.content.toLowerCase().indexOf(lq);
-          if (idx !== -1) {
-            const s = Math.max(0, idx - 30);
-            const e = Math.min(a.content.length, idx + q.length + 50);
-            preview = (s > 0 ? '...' : '') + 
-              a.content.slice(s, e).replace(/\n/g, ' ').replace(
-                new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>'
-              ) + (e < a.content.length ? '...' : '');
-          }
-          return `<div class="result-item" data-i="${i}">
+        searchResults.innerHTML = res.slice(0, 8).map((a, i) => `
+          <div class="result-item" data-i="${i}">
             <div class="result-title">${a.name.replace('.md', '')}</div>
             <div class="result-path">${a.path}</div>
-            ${preview ? `<div class="result-preview">${preview}</div>` : ''}
-          </div>`;
-        }).join('');
+          </div>
+        `).join('');
 
         searchResults.querySelectorAll('.result-item').forEach((el, i) => {
-          el.onclick = () => res[i] && showArticle(res[i]);
+          el.onclick = () => res[i] && showArticle(res[i], null);
         });
       }
       searchResults.classList.add('show');
