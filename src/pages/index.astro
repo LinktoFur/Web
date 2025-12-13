@@ -201,7 +201,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       color: var(--c-text-3);
     }
 
-    .theme-toggle {
+    .theme-toggle, .menu-toggle {
       width: 36px;
       height: 36px;
       border: none;
@@ -214,12 +214,26 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       justify-content: center;
     }
 
-    .theme-toggle:hover {
+    .theme-toggle:hover, .menu-toggle:hover {
       color: var(--c-text);
       background: var(--c-bg-mute);
     }
 
-    .theme-toggle svg { width: 18px; height: 18px; }
+    .theme-toggle svg, .menu-toggle svg { width: 18px; height: 18px; }
+
+    .menu-toggle { display: none; }
+
+    .header-right { display: flex; align-items: center; gap: 4px; }
+
+    /* Mobile overlay */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 150;
+    }
+    .overlay.show { display: block; }
   </style>
 </head>
 <body>
@@ -252,8 +266,14 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
           <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
         </svg>
       </button>
+      <button class="menu-toggle" id="menuToggle" title="菜单">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
     </div>
   </header>
+  <div class="overlay" id="overlay"></div>
 
 
   <style is:global>
@@ -404,11 +424,32 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     [data-theme="dark"] .markdown-body { color-scheme: dark; }
 
     @media (max-width: 768px) {
-      .header-left { width: auto; }
-      .sidebar { display: none; }
+      .header { padding: 0 12px; gap: 0; }
+      .header-left { width: auto; padding: 0; flex-shrink: 0; }
+      .header-center { flex: 1; padding: 0 12px; }
+      .header-right { flex-shrink: 0; }
+      .search-wrap { max-width: 100%; width: 100%; }
+      .logo { cursor: pointer; }
+      .logo span:last-child { display: none; }
+      
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 160;
+        width: 280px;
+      }
+      .sidebar.open { transform: translateX(0); }
+      
       .main { margin-left: 0; }
+      .menu-toggle { display: flex; }
       .search-box kbd { display: none; }
-      .article-title { font-size: 28px; }
+      .search-box { height: 38px; padding: 0 12px; }
+      .search-box input { font-size: 14px; min-width: 0; }
+      
+      .article-view { padding: 24px 16px; }
+      .article-title { font-size: 24px; }
+      .welcome h1 { font-size: 36px; }
+      .welcome p { font-size: 14px; }
     }
   </style>
 
@@ -453,6 +494,30 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       $('moonIcon').style.display = t === 'dark' ? 'block' : 'none';
       $('sunIcon').style.display = t === 'light' ? 'block' : 'none';
     }
+
+    // Mobile menu
+    const sidebar = $('sidebar');
+    const overlay = $('overlay');
+    
+    function toggleMenu() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('show');
+    }
+    
+    $('menuToggle').onclick = toggleMenu;
+    
+    // Logo click - open menu on mobile
+    $('logoBtn').onclick = e => {
+      if (window.innerWidth <= 768) {
+        e.preventDefault();
+        toggleMenu();
+      }
+    };
+    
+    overlay.onclick = () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    };
 
     // Load articles
     fetch(API + 'api.php').then(r => r.json()).then(data => {
@@ -529,6 +594,9 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       if (navEl) navEl.classList.add('active');
 
       $('searchResults').classList.remove('show');
+      // Close mobile menu
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
       window.scrollTo(0, 0);
     }
 
