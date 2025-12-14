@@ -722,19 +722,29 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       overlay.classList.remove('show');
     };
 
+    // Category metadata from _category_.json
+    let categoryMeta = {};
+    
     // Load articles
     fetch(API + 'api.php').then(r => r.json()).then(data => {
       const loaded = {};
       const folders = data.folders || [];
       
-      // Filter to only top-level folders (no slash in name)
-      const topFolders = folders.filter(f => !f.includes('/'));
+      // Store category metadata (label, position)
+      folders.forEach(f => {
+        if (f.path) {
+          categoryMeta[f.path] = { label: f.label, position: f.position };
+        }
+      });
+      
+      // Filter to only top-level folders (no slash in path)
+      const topFolders = folders.filter(f => f.path && !f.path.includes('/'));
       
       // Also load root articles (no category)
       const requests = [
         fetch(API + 'api.php?category=').then(r => r.json()),
         ...topFolders.map(folder => 
-          fetch(API + 'api.php?category=' + encodeURIComponent(folder)).then(r => r.json())
+          fetch(API + 'api.php?category=' + encodeURIComponent(folder.path)).then(r => r.json())
         )
       ];
 
@@ -800,19 +810,30 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       return tree;
     }
 
-    function renderFolders(folders, level = 0) {
+    function renderFolders(folders, level = 0, parentPath = '') {
+      // Sort folders by position from categoryMeta
+      const sortedNames = Object.keys(folders).sort((a, b) => {
+        const pathA = parentPath ? parentPath + '/' + a : a;
+        const pathB = parentPath ? parentPath + '/' + b : b;
+        const posA = categoryMeta[pathA]?.position ?? 999;
+        const posB = categoryMeta[pathB]?.position ?? 999;
+        return posA - posB;
+      });
+      
       let html = '';
-      Object.keys(folders).forEach(name => {
+      sortedNames.forEach(name => {
         const node = folders[name];
         const hasChildren = Object.keys(node._children).length > 0;
         const hasArticles = node._articles.length > 0;
         const indent = level * 12;
+        const fullPath = parentPath ? parentPath + '/' + name : name;
+        const displayName = categoryMeta[fullPath]?.label || name;
         
         if (hasArticles || hasChildren) {
           html += '<div class="nav-group collapsed" style="margin-left:' + indent + 'px">';
           html += '<div class="nav-group-title">';
           html += '<svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
-          html += '<span>' + name + '</span>';
+          html += '<span>' + displayName + '</span>';
           html += '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
           html += '</div>';
           html += '<div class="nav-group-items">';
@@ -826,7 +847,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
           });
           
           if (hasChildren) {
-            html += renderFolders(node._children, level + 1);
+            html += renderFolders(node._children, level + 1, fullPath);
           }
           
           html += '</div></div>';

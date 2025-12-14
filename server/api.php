@@ -4,12 +4,21 @@ header('Access-Control-Allow-Origin: *');
 
 $category = isset($_GET['category']) ? $_GET['category'] : null;
 
+function getCategoryMeta($dir) {
+    $metaFile = $dir . '/_category_.json';
+    if (file_exists($metaFile)) {
+        $content = file_get_contents($metaFile);
+        return json_decode($content, true);
+    }
+    return null;
+}
+
 function scanArticles($dir, $baseDir = '') {
     $result = [];
     $items = scandir($dir);
     
     foreach ($items as $item) {
-        if ($item === '.' || $item === '..') continue;
+        if ($item === '.' || $item === '..' || $item === '_category_.json') continue;
         
         $path = $dir . '/' . $item;
         $relativePath = $baseDir ? $baseDir . '/' . $item : $item;
@@ -41,7 +50,12 @@ function getFolders($dir, $baseDir = '') {
         $relativePath = $baseDir ? $baseDir . '/' . $item : $item;
         
         if (is_dir($path)) {
-            $folders[] = $relativePath;
+            $meta = getCategoryMeta($path);
+            $folders[] = [
+                'path' => $relativePath,
+                'label' => $meta['label'] ?? $item,
+                'position' => $meta['position'] ?? 999
+            ];
             $subFolders = getFolders($path, $relativePath);
             $folders = array_merge($folders, $subFolders);
         }
