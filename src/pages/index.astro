@@ -148,13 +148,16 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     .search-box input::placeholder { color: var(--c-text-3); }
 
-    .search-box kbd {
-      padding: 3px 7px;
-      font-size: 11px;
+    .search-icon-right {
+      width: 16px;
+      height: 16px;
       color: var(--c-text-3);
-      background: var(--c-bg-mute);
-      border: 1px solid var(--c-border);
-      border-radius: 4px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    
+    .search-icon-right:hover {
+      color: var(--c-brand);
     }
 
     .search-results {
@@ -276,7 +279,9 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
           <input type="text" id="searchInput" placeholder="搜索院校..." autocomplete="off">
-          <kbd>⌘K</kbd>
+          <svg class="search-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
         </div>
         <div class="search-results" id="searchResults"></div>
       </div>
@@ -592,11 +597,11 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       .header-left { width: auto; padding: 0; flex: 0 0 auto; display: flex; align-items: center; gap: 0; }
       .header-left .logo { display: none; }
       .menu-toggle { display: flex !important; }
-      .header-center { flex: 1 1 auto; padding: 0 8px; min-width: 0; }
+      .header-center { flex: 1 1 0; padding: 0 8px; min-width: 130px; }
       .header-right { flex: 0 0 auto; }
-      .search-wrap { width: 100%; max-width: none; }
-      .search-box { width: 100% !important; box-sizing: border-box; height: 42px; padding: 0 12px; }
-      .search-box kbd { display: none; }
+      .search-wrap { width: 100%; min-width: 130px; }
+      .search-box { width: 100%; min-width: 130px; box-sizing: border-box; height: 42px; padding: 0 12px; }
+      .search-icon-right { display: none; }
       .search-box input { font-size: 15px; min-width: 0; flex: 1; }
       .search-box svg { flex-shrink: 0; }
       
