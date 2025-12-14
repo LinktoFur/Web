@@ -965,22 +965,41 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       // Try to find matching article
       let found = null;
       
-      // Try exact match: /folder/article or /article
       if (parts.length >= 1) {
         const slug = parts[parts.length - 1];
         const folderPath = parts.slice(0, -1).join('/');
         
+        // Try exact match: folder/slug matches path and name
         found = articles.find(a => {
           const aSlug = a.name.replace('.md', '');
           const aPath = a.path || '';
           return aSlug === slug && aPath === folderPath;
         });
         
-        // Also try with folder as part of path
+        // Try: full path matches path + slug
         if (!found) {
           found = articles.find(a => {
             const aSlug = a.name.replace('.md', '');
-            return aSlug === slug || a.path + '/' + aSlug === path;
+            const aPath = a.path || '';
+            const fullPath = aPath ? aPath + '/' + aSlug : aSlug;
+            return fullPath === path;
+          });
+        }
+        
+        // Try: slug only match (for root articles)
+        if (!found) {
+          found = articles.find(a => {
+            const aSlug = a.name.replace('.md', '');
+            return aSlug === slug && (!a.path || a.path === '' || a.path === '根目录');
+          });
+        }
+        
+        // Try: path ends with slug (partial match)
+        if (!found) {
+          found = articles.find(a => {
+            const aSlug = a.name.replace('.md', '');
+            const aPath = a.path || '';
+            return aSlug === slug && (aPath.endsWith(folderPath) || folderPath.endsWith(aPath));
           });
         }
       }
