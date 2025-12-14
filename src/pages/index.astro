@@ -599,6 +599,32 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     let articles = [];
     const $ = id => document.getElementById(id);
 
+    // Parse frontmatter (Docusaurus format)
+    function parseFrontmatter(content) {
+      const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      if (!match) return { frontmatter: {}, content };
+      
+      const fm = {};
+      match[1].split(/\r?\n/).forEach(line => {
+        const idx = line.indexOf(':');
+        if (idx > 0) {
+          const key = line.slice(0, idx).trim();
+          const val = line.slice(idx + 1).trim();
+          fm[key] = isNaN(val) ? val : Number(val);
+        }
+      });
+      return { frontmatter: fm, content: content.slice(match[0].length) };
+    }
+
+    function removeFrontmatter(content) {
+      return parseFrontmatter(content).content;
+    }
+
+    function getSidebarPosition(content) {
+      const { frontmatter } = parseFrontmatter(content);
+      return frontmatter.sidebar_position ?? 999;
+    }
+
     // Theme
     const theme = localStorage.getItem('theme') || 'dark';
     document.documentElement.dataset.theme = theme;
@@ -682,11 +708,21 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
             current[part] = { _articles: [], _children: {} };
           }
           if (i === parts.length - 1) {
+            // Add with sidebar_position for sorting
+            a._position = getSidebarPosition(a.content);
             current[part]._articles.push(a);
           }
           current = current[part]._children;
         });
       });
+      
+      // Sort articles by sidebar_position
+      function sortTree(node) {
+        node._articles.sort((a, b) => a._position - b._position);
+        Object.values(node._children).forEach(sortTree);
+      }
+      Object.values(tree).forEach(sortTree);
+      
       return tree;
     }
 
@@ -753,8 +789,8 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       $('articleMeta').textContent = a.path;
       $('articleTitle').textContent = a.name.replace('.md', '');
       
-      // Remove search tag before display
-      let content = a.content;
+      // Remove frontmatter and search tag before display
+      let content = removeFrontmatter(a.content);
       if (content.trim().startsWith('#need114514')) {
         content = content.replace('#need114514', '').replace(/^\n+/, '');
       }
@@ -821,6 +857,12 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
     function stripMarkdown(text) {
+      // Remove frontmatter first
+      text = removeFrontmatter(text);
+      // Remove search tag
+      if (text.trim().startsWith('#need114514')) {
+        text = text.replace('#need114514', '').replace(/^\n+/, '');
+      }
       return text
         .replace(/^#{1,6}\s+/gm, '')
         .replace(/\*\*([^*]+)\*\*/g, '$1')
