@@ -826,7 +826,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
           const path = el.dataset.path;
           const name = el.dataset.name;
           const article = articles.find(a => a.path === path && a.name === name);
-          if (article) showArticle(article, el, null);
+          if (article) showArticle(article, el, null, null);
         };
       });
     }
@@ -840,7 +840,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       return filename.replace('.md', '');
     }
 
-    function showArticle(a, navEl, keyword) {
+    function showArticle(a, navEl, keyword, hash) {
       $('welcomeView').style.display = 'none';
       $('articleView').classList.add('show');
       $('articleMeta').textContent = a.path || '';
@@ -900,12 +900,21 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       sidebar.classList.remove('open');
       overlay.classList.remove('show');
       
-      // Scroll to first highlight
+      // Scroll to target
       if (keyword) {
         setTimeout(() => {
           const highlight = document.querySelector('.search-highlight[data-highlight="true"]');
           if (highlight) {
             highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      } else if (hash) {
+        // Scroll to anchor
+        setTimeout(() => {
+          const hashId = decodeURIComponent(hash.slice(1));
+          const target = document.getElementById(hashId);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }, 100);
       } else {
@@ -915,7 +924,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       // Update URL
       const slug = a.name.replace('.md', '');
       const urlPath = a.path ? '/' + a.path + '/' + slug : '/' + slug;
-      history.pushState({ path: a.path, name: a.name }, '', urlPath);
+      history.pushState({ path: a.path, name: a.name }, '', urlPath + (hash || ''));
 
       // Handle links in article
       setTimeout(() => {
@@ -940,8 +949,17 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     }
 
     function navigateToPath(urlPath) {
+      // Extract hash if present
+      let hash = '';
+      let pathWithoutHash = urlPath;
+      const hashIndex = urlPath.indexOf('#');
+      if (hashIndex !== -1) {
+        hash = urlPath.slice(hashIndex);
+        pathWithoutHash = urlPath.slice(0, hashIndex);
+      }
+      
       // Remove leading slash and parse path
-      const path = urlPath.replace(/^\//, '').replace(/\/$/, '');
+      const path = pathWithoutHash.replace(/^\//, '').replace(/\/$/, '');
       const parts = path.split('/');
       
       // Try to find matching article
@@ -968,7 +986,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       }
       
       if (found) {
-        showArticle(found, null, null);
+        showArticle(found, null, null, hash);
         // Update nav active state
         document.querySelectorAll('.nav-item').forEach(el => {
           if (el.dataset.path === found.path && el.dataset.name === found.name) {
@@ -982,7 +1000,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     window.onpopstate = e => {
       if (e.state && e.state.name) {
         const article = articles.find(a => a.path === e.state.path && a.name === e.state.name);
-        if (article) showArticle(article, null, null);
+        if (article) showArticle(article, null, null, null);
       } else {
         $('welcomeView').style.display = 'flex';
         $('articleView').classList.remove('show');
@@ -992,14 +1010,16 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     // Handle initial URL on page load
     function handleInitialRoute() {
-      // Vercel rewrites all routes to /index.html but keeps pathname
+      // Vercel rewrites all routes to /index.html but keeps pathname and hash
       const path = window.location.pathname;
+      const hash = window.location.hash;
+      const fullPath = path + hash;
       
       if (path && path !== '/') {
         // Wait for articles to load then navigate
         const checkAndNavigate = () => {
           if (articles.length > 0) {
-            navigateToPath(path);
+            navigateToPath(fullPath);
           } else {
             setTimeout(checkAndNavigate, 100);
           }
@@ -1127,7 +1147,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
         const resRef = results;
         searchResults.querySelectorAll('.result-item').forEach((el, i) => {
-          el.onclick = () => resRef[i] && showArticle(resRef[i].article, null, q);
+          el.onclick = () => resRef[i] && showArticle(resRef[i].article, null, q, null);
         });
       }
       searchResults.classList.add('show');
