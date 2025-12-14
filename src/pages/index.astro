@@ -906,11 +906,19 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       const urlPath = a.path ? '/' + a.path + '/' + slug : '/' + slug;
       history.pushState({ path: a.path, name: a.name }, '', urlPath);
 
-      // Handle internal links in article
+      // Handle links in article
       setTimeout(() => {
         $('articleBody').querySelectorAll('a').forEach(link => {
           const href = link.getAttribute('href');
-          if (href && href.startsWith('/') && !href.startsWith('//')) {
+          if (!href) return;
+          
+          // External links: open in new tab
+          if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+          }
+          // Internal links: handle with SPA navigation
+          else if (href.startsWith('/')) {
             link.onclick = e => {
               e.preventDefault();
               navigateToPath(href);
