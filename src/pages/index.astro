@@ -329,17 +329,39 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       letter-spacing: 0.5px;
       cursor: pointer;
       border-radius: 6px;
+      user-select: none;
     }
 
     .nav-group-title:hover { background: var(--c-bg-mute); }
 
-    .nav-group-title svg {
+    .nav-group-title .folder-icon {
       width: 14px;
       height: 14px;
       color: var(--c-brand);
     }
 
-    .nav-group-items { padding-left: 8px; }
+    .nav-group-title .chevron {
+      width: 14px;
+      height: 14px;
+      color: var(--c-text-3);
+      margin-left: auto;
+      transition: transform 0.2s;
+    }
+
+    .nav-group.collapsed .nav-group-title .chevron {
+      transform: rotate(-90deg);
+    }
+
+    .nav-group-items {
+      padding-left: 8px;
+      overflow: hidden;
+      transition: max-height 0.2s ease;
+    }
+
+    .nav-group.collapsed .nav-group-items {
+      max-height: 0 !important;
+      padding: 0;
+    }
 
     .nav-item {
       display: flex;
@@ -650,10 +672,13 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       sidebar.innerHTML = Object.keys(grouped).map(path => `
         <div class="nav-group">
           <div class="nav-group-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
             </svg>
             <span>${path}</span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
           </div>
           <div class="nav-group-items">
             ${grouped[path].map((a, i) => `
@@ -669,8 +694,16 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         </div>
       `).join('');
 
-      sidebar.querySelectorAll('.nav-item').forEach(el => {
+      // Toggle collapse
+      sidebar.querySelectorAll('.nav-group-title').forEach(el => {
         el.onclick = () => {
+          el.parentElement.classList.toggle('collapsed');
+        };
+      });
+
+      sidebar.querySelectorAll('.nav-item').forEach(el => {
+        el.onclick = e => {
+          e.stopPropagation();
           const path = el.dataset.path;
           const idx = parseInt(el.dataset.idx);
           showArticle(grouped[path][idx], el, null);
