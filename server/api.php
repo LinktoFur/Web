@@ -60,6 +60,26 @@ if ($category === null) {
     echo json_encode([
         'folders' => array_values($folders)
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+} elseif ($category === '') {
+    // Root directory md files (no category)
+    $articles = [];
+    $items = scandir($baseDir);
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $path = $baseDir . '/' . $item;
+        if (!is_dir($path) && pathinfo($item, PATHINFO_EXTENSION) === 'md') {
+            $content = file_get_contents($path);
+            $articles[] = [
+                'path' => '',
+                'name' => $item,
+                'content' => $content
+            ];
+        }
+    }
+    echo json_encode([
+        'category' => '',
+        'articles' => $articles
+    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 } else {
     $categoryPath = $baseDir . '/' . $category;
     

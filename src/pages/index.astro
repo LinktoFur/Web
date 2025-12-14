@@ -642,26 +642,33 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     // Load articles
     fetch(API + 'api.php').then(r => r.json()).then(data => {
-      if (!data.folders) return;
       const loaded = {};
-      let pending = data.folders.length;
+      const folders = data.folders || [];
+      
+      // Filter to only top-level folders (no slash in name)
+      const topFolders = folders.filter(f => !f.includes('/'));
+      
+      // Also load root articles (no category)
+      const requests = [
+        fetch(API + 'api.php?category=').then(r => r.json()),
+        ...topFolders.map(folder => 
+          fetch(API + 'api.php?category=' + encodeURIComponent(folder)).then(r => r.json())
+        )
+      ];
 
-      data.folders.forEach(folder => {
-        fetch(API + 'api.php?category=' + encodeURIComponent(folder))
-          .then(r => r.json())
-          .then(d => {
-            if (d.articles) {
-              d.articles.forEach(a => {
-                const key = a.path + '/' + a.name;
-                if (!loaded[key]) {
-                  loaded[key] = true;
-                  articles.push({ path: a.path, name: a.name, content: a.content });
-                }
-              });
-            }
-            pending--;
-            if (pending === 0) renderNav();
-          });
+      Promise.all(requests).then(results => {
+        results.forEach(d => {
+          if (d.articles) {
+            d.articles.forEach(a => {
+              const key = a.path + '/' + a.name;
+              if (!loaded[key]) {
+                loaded[key] = true;
+                articles.push({ path: a.path || '根目录', name: a.name, content: a.content });
+              }
+            });
+          }
+        });
+        renderNav();
       });
     });
 
