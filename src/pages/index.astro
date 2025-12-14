@@ -847,12 +847,20 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       // Use multiline flag to match first # heading anywhere
       content = content.replace(/^#\s+.+$/m, '').replace(/^\n+/, '');
       
-      // Replace relative image paths with API base URL
+      // Replace relative paths with API base URL
       // a.path could be empty, '根目录', or actual folder path
       const realPath = (a.path && a.path !== '根目录') ? a.path : '';
-      const imgBasePath = realPath ? API + realPath + '/' : API;
-      content = content.replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, (match, alt, src) => {
-        return '![' + alt + '](' + imgBasePath + src + ')';
+      const assetBasePath = realPath ? API + realPath + '/' : API;
+      
+      // Replace relative image paths: ![alt](./path) or ![alt](path)
+      content = content.replace(/!\[([^\]]*)\]\((?!https?:\/\/)(?!\/[^/])([^)]+)\)/g, (match, alt, src) => {
+        const cleanSrc = src.replace(/^\.\//, '');
+        return '![' + alt + '](' + assetBasePath + cleanSrc + ')';
+      });
+      
+      // Replace relative link paths that point to assets (not internal routes): [text](./path)
+      content = content.replace(/\[([^\]]+)\]\(\.\/([^)]+)\)/g, (match, text, src) => {
+        return '[' + text + '](' + assetBasePath + src + ')';
       });
       
       // Pre-process: parse markdown inside HTML tags like <center>, <h1>-<h6>, etc.
