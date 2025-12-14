@@ -881,15 +881,14 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         return '[' + text + '](' + assetBasePath + src + ')';
       });
       
-      // Fix markdown bold/italic with spaces: ** text ** -> **text**
-      content = content.replace(/\*\*\s+([^*]+?)\s+\*\*/g, '**$1**');
-      content = content.replace(/\*\s+([^*]+?)\s+\*/g, '*$1*');
+      // Fix markdown bold/italic with spaces on BOTH sides: ** text ** -> **text**
+      // Only fix when there's space after opening ** AND before closing **
+      content = content.replace(/\*\* ([^*]+) \*\*/g, '**$1**');
       
       // Pre-process: parse markdown inside HTML tags like <center>, <h1>-<h6>, etc.
       content = content.replace(/<(center|h[1-6]|div|span|p)>([\s\S]*?)<\/\1>/gi, (match, tag, inner) => {
-        // Fix bold/italic with spaces inside HTML tags too
-        let fixed = inner.replace(/\*\*\s+([^*]+?)\s+\*\*/g, '**$1**');
-        fixed = fixed.replace(/\*\s+([^*]+?)\s+\*/g, '*$1*');
+        // Fix bold with spaces on both sides inside HTML tags too
+        let fixed = inner.replace(/\*\* ([^*]+) \*\*/g, '**$1**');
         // Parse markdown inside HTML tag
         const parsed = marked.parseInline(fixed);
         return '<' + tag + '>' + parsed + '</' + tag + '>';
