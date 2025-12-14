@@ -965,13 +965,8 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     // Handle initial URL on page load
     function handleInitialRoute() {
-      // Check sessionStorage first (from catch-all route redirect)
-      let path = sessionStorage.getItem('initialPath');
-      if (path) {
-        sessionStorage.removeItem('initialPath');
-      } else {
-        path = window.location.pathname;
-      }
+      // Vercel rewrites all routes to /index.html but keeps pathname
+      const path = window.location.pathname;
       
       if (path && path !== '/') {
         // Wait for articles to load then navigate
