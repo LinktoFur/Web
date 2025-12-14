@@ -1090,11 +1090,8 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
           if (path && path !== '/') {
             navigateToPath(fullPath);
           } else {
-            // Default: open intro page (介绍页.md)
-            const intro = articles.find(a => a.name === '介绍页.md');
-            if (intro) {
-              showArticle(intro, null, null, null);
-            }
+            // Default: redirect to /file/intro
+            navigateToPath('/file/intro');
           }
         } else {
           setTimeout(checkAndNavigate, 100);
