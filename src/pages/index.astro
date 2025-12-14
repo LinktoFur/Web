@@ -958,6 +958,9 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         pathWithoutHash = urlPath.slice(0, hashIndex);
       }
       
+      // Decode URL-encoded characters (e.g., %E7%AC%AC -> 第)
+      pathWithoutHash = decodeURIComponent(pathWithoutHash);
+      
       // Remove leading slash and parse path
       const path = pathWithoutHash.replace(/^\//, '').replace(/\/$/, '');
       const parts = path.split('/');
