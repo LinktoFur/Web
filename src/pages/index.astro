@@ -108,7 +108,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     /* Search */
     .search-wrap {
       width: 100%;
-      max-width: 480px;
+      max-width: 520px;
       position: relative;
     }
 
@@ -116,11 +116,11 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0 14px;
-      height: 40px;
+      padding: 0 16px;
+      height: 44px;
       background: var(--c-bg-soft);
       border: 1px solid var(--c-border);
-      border-radius: 8px;
+      border-radius: 10px;
       transition: all 0.2s;
     }
 
@@ -231,13 +231,14 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.2s ease;
     }
 
     .theme-toggle:hover, .menu-toggle:hover {
       color: var(--c-text);
       background: var(--c-bg-mute);
     }
-
+    
     .theme-toggle svg, .menu-toggle svg { width: 18px; height: 18px; }
 
     .menu-toggle { display: none; }
@@ -259,8 +260,12 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
   <!-- Header -->
   <header class="header">
     <div class="header-left">
+      <button class="menu-toggle" id="menuToggle" title="菜单">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <a href="/" class="logo" id="logoBtn">
-        <!-- span class="logo-icon">M</span-->
         <span>LinktoFur Demo</span>
       </a>
     </div>
@@ -283,11 +288,6 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         </svg>
         <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
           <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-      </button>
-      <button class="menu-toggle" id="menuToggle" title="菜单">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
       </button>
     </div>
@@ -588,32 +588,47 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     }
 
     @media (max-width: 768px) {
-      .header { padding: 0 12px; gap: 0; }
-      .header-left { width: auto; padding: 0; flex-shrink: 0; }
-      .header-center { flex: 1; padding: 0 12px; }
-      .header-right { flex-shrink: 0; }
-      .search-wrap { max-width: 100%; width: 100%; }
-      .logo { cursor: pointer; }
-      .logo span:last-child { display: none; }
+      .header { padding: 0 12px; gap: 8px; display: flex; }
+      .header-left { width: auto; padding: 0; flex: 0 0 auto; display: flex; align-items: center; gap: 0; }
+      .header-left .logo { display: none; }
+      .menu-toggle { display: flex !important; }
+      .header-center { flex: 1 1 auto; padding: 0 8px; min-width: 0; }
+      .header-right { flex: 0 0 auto; }
+      .search-wrap { width: 100%; max-width: none; }
+      .search-box { width: 100% !important; box-sizing: border-box; height: 42px; padding: 0 12px; }
+      .search-box kbd { display: none; }
+      .search-box input { font-size: 15px; min-width: 0; flex: 1; }
+      .search-box svg { flex-shrink: 0; }
       
       .sidebar {
         transform: translateX(-100%);
         transition: transform 0.3s ease;
         z-index: 160;
         width: 280px;
+        top: 0;
+        height: 100vh;
+        padding-top: calc(var(--header-height) + 12px);
       }
       .sidebar.open { transform: translateX(0); }
       
       .main { margin-left: 0; }
-      .menu-toggle { display: flex; }
-      .search-box kbd { display: none; }
-      .search-box { height: 38px; padding: 0 12px; }
-      .search-box input { font-size: 14px; min-width: 0; }
+      
+      .search-results {
+        position: fixed;
+        top: calc(var(--header-height) + 8px);
+        left: 12px;
+        right: 12px;
+        max-height: calc(100vh - var(--header-height) - 24px);
+        z-index: 300;
+        width: auto;
+      }
       
       .article-view { padding: 24px 16px; }
       .article-title { font-size: 24px; }
       .welcome h1 { font-size: 36px; }
       .welcome p { font-size: 14px; }
+      
+      .overlay.show { z-index: 155; }
     }
   </style>
 
@@ -708,14 +723,6 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     }
     
     $('menuToggle').onclick = toggleMenu;
-    
-    // Logo click - open menu on mobile
-    $('logoBtn').onclick = e => {
-      if (window.innerWidth <= 768) {
-        e.preventDefault();
-        toggleMenu();
-      }
-    };
     
     overlay.onclick = () => {
       sidebar.classList.remove('open');
