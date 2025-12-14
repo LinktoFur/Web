@@ -270,7 +270,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
-          <input type="text" id="searchInput" placeholder="搜索文档..." autocomplete="off">
+          <input type="text" id="searchInput" placeholder="搜索大学..." autocomplete="off">
           <kbd>⌘K</kbd>
         </div>
         <div class="search-results" id="searchResults"></div>
@@ -584,7 +584,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       <div class="welcome" id="welcomeView">
         <div class="welcome-inner">
           <h1>Moke</h1>
-          <p>从左侧选择文档开始阅读</p>
+          <p>....</p>
         </div>
       </div>
       <article class="article-view" id="articleView">
@@ -702,6 +702,15 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       });
     });
 
+    function getNavTitle(a) {
+      // Try to get title from first # heading
+      let cleaned = removeFrontmatter(a.content);
+      cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const match = cleaned.match(/^#\s+(.+)$/m);
+      if (match) return match[1].trim();
+      return a.name.replace('.md', '');
+    }
+
     function buildTree(articles) {
       const tree = { _rootArticles: [], _folders: {} };
       
@@ -757,9 +766,10 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
           html += '<div class="nav-group-items">';
           
           node._articles.forEach(a => {
+            const title = getNavTitle(a);
             html += '<div class="nav-item" data-path="' + a.path + '" data-name="' + a.name + '">';
             html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-            html += '<span class="nav-item-text">' + a.name.replace('.md', '') + '</span>';
+            html += '<span class="nav-item-text">' + title + '</span>';
             html += '</div>';
           });
           
@@ -780,9 +790,10 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       
       // Render root articles first (no folder wrapper)
       tree._rootArticles.forEach(a => {
+        const title = getNavTitle(a);
         html += '<div class="nav-item root-item" data-path="' + (a.path || '') + '" data-name="' + a.name + '">';
         html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-        html += '<span class="nav-item-text">' + a.name.replace('.md', '') + '</span>';
+        html += '<span class="nav-item-text">' + title + '</span>';
         html += '</div>';
       });
       
@@ -809,17 +820,48 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       });
     }
 
+    function getArticleTitle(content, filename) {
+      // Try to get title from first # heading
+      let cleaned = removeFrontmatter(content);
+      cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      const match = cleaned.match(/^#\s+(.+)$/m);
+      if (match) return match[1].trim();
+      return filename.replace('.md', '');
+    }
+
     function showArticle(a, navEl, keyword) {
       $('welcomeView').style.display = 'none';
       $('articleView').classList.add('show');
-      $('articleMeta').textContent = a.path;
-      $('articleTitle').textContent = a.name.replace('.md', '');
+      $('articleMeta').textContent = a.path || '';
+      $('articleMeta').style.display = a.path ? 'block' : 'none';
+      $('articleTitle').textContent = getArticleTitle(a.content, a.name);
       
       // Remove frontmatter and search tag before display
       let content = removeFrontmatter(a.content);
+      // Normalize line endings
+      content = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
       if (content.trim().startsWith('#need114514')) {
         content = content.replace('#need114514', '').replace(/^\n+/, '');
       }
+      // Remove first h1 title to avoid duplicate (we show it in article-title)
+      // Use multiline flag to match first # heading anywhere
+      content = content.replace(/^#\s+.+$/m, '').replace(/^\n+/, '');
+      
+      // Replace relative image paths with API base URL
+      // a.path could be empty, '根目录', or actual folder path
+      const realPath = (a.path && a.path !== '根目录') ? a.path : '';
+      const imgBasePath = realPath ? API + realPath + '/' : API;
+      content = content.replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, (match, alt, src) => {
+        return '![' + alt + '](' + imgBasePath + src + ')';
+      });
+      
+      // Pre-process: parse markdown inside HTML tags like <center>, <h1>-<h6>, etc.
+      content = content.replace(/<(center|h[1-6]|div|span|p)>([\s\S]*?)<\/\1>/gi, (match, tag, inner) => {
+        // Parse markdown inside HTML tag
+        const parsed = marked.parseInline(inner);
+        return '<' + tag + '>' + parsed + '</' + tag + '>';
+      });
+      
       let html = marked.parse(content);
       // Highlight and mark keyword for scrolling
       if (keyword) {
@@ -849,6 +891,98 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         }, 100);
       } else {
         window.scrollTo(0, 0);
+      }
+
+      // Update URL
+      const slug = a.name.replace('.md', '');
+      const urlPath = a.path ? '/' + a.path + '/' + slug : '/' + slug;
+      history.pushState({ path: a.path, name: a.name }, '', urlPath);
+
+      // Handle internal links in article
+      setTimeout(() => {
+        $('articleBody').querySelectorAll('a').forEach(link => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('/') && !href.startsWith('//')) {
+            link.onclick = e => {
+              e.preventDefault();
+              navigateToPath(href);
+            };
+          }
+        });
+      }, 0);
+    }
+
+    function navigateToPath(urlPath) {
+      // Remove leading slash and parse path
+      const path = urlPath.replace(/^\//, '').replace(/\/$/, '');
+      const parts = path.split('/');
+      
+      // Try to find matching article
+      let found = null;
+      
+      // Try exact match: /folder/article or /article
+      if (parts.length >= 1) {
+        const slug = parts[parts.length - 1];
+        const folderPath = parts.slice(0, -1).join('/');
+        
+        found = articles.find(a => {
+          const aSlug = a.name.replace('.md', '');
+          const aPath = a.path || '';
+          return aSlug === slug && aPath === folderPath;
+        });
+        
+        // Also try with folder as part of path
+        if (!found) {
+          found = articles.find(a => {
+            const aSlug = a.name.replace('.md', '');
+            return aSlug === slug || a.path + '/' + aSlug === path;
+          });
+        }
+      }
+      
+      if (found) {
+        showArticle(found, null, null);
+        // Update nav active state
+        document.querySelectorAll('.nav-item').forEach(el => {
+          if (el.dataset.path === found.path && el.dataset.name === found.name) {
+            el.classList.add('active');
+          }
+        });
+      }
+    }
+
+    // Handle browser back/forward
+    window.onpopstate = e => {
+      if (e.state && e.state.name) {
+        const article = articles.find(a => a.path === e.state.path && a.name === e.state.name);
+        if (article) showArticle(article, null, null);
+      } else {
+        $('welcomeView').style.display = 'flex';
+        $('articleView').classList.remove('show');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      }
+    };
+
+    // Handle initial URL on page load
+    function handleInitialRoute() {
+      // Check sessionStorage first (from catch-all route redirect)
+      let path = sessionStorage.getItem('initialPath');
+      if (path) {
+        sessionStorage.removeItem('initialPath');
+      } else {
+        path = window.location.pathname;
+      }
+      
+      if (path && path !== '/') {
+        // Wait for articles to load then navigate
+        const checkAndNavigate = () => {
+          if (articles.length > 0) {
+            navigateToPath(path);
+          } else {
+            setTimeout(checkAndNavigate, 100);
+          }
+        };
+        checkAndNavigate();
       }
     }
 
@@ -978,6 +1112,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     }
 
     searchInput.focus();
+    handleInitialRoute();
   </script>
 </body>
 </html>
