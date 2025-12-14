@@ -616,7 +616,14 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
 
     // Parse frontmatter (Docusaurus format)
     function parseFrontmatter(content) {
-      const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      // Standard format: ---\nkey: value\n---
+      let match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
+      
+      // Compact format: ---key: value---
+      if (!match) {
+        match = content.match(/^---([^-][\s\S]*?)---\r?\n?/);
+      }
+      
       if (!match) return { frontmatter: {}, content };
       
       const fm = {};
