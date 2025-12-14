@@ -355,12 +355,16 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
     .nav-group-items {
       padding-left: 8px;
       overflow: hidden;
-      transition: max-height 0.2s ease;
+      max-height: 1000px;
+      transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.2s ease;
+      opacity: 1;
     }
 
     .nav-group.collapsed .nav-group-items {
-      max-height: 0 !important;
-      padding: 0;
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
     }
 
     .nav-item {
