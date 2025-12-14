@@ -745,7 +745,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
               const key = a.path + '/' + a.name;
               if (!loaded[key]) {
                 loaded[key] = true;
-                articles.push({ path: a.path || '根目录', name: a.name, content: a.content });
+                articles.push({ path: a.path || 'file', name: a.name, content: a.content });
               }
             });
           }
@@ -770,7 +770,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         a._position = getSidebarPosition(a.content);
         
         // Root level articles (no path or empty path)
-        if (!a.path || a.path === '' || a.path === '根目录') {
+        if (!a.path || a.path === '' || a.path === 'file') {
           tree._rootArticles.push(a);
           return;
         }
@@ -900,8 +900,8 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       content = content.replace(/^#\s+.+$/m, '').replace(/^\n+/, '');
       
       // Replace relative paths with API base URL
-      // a.path could be empty, '根目录', or actual folder path
-      const realPath = (a.path && a.path !== '根目录') ? a.path : '';
+      // a.path could be empty, 'file', or actual folder path
+      const realPath = (a.path && a.path !== 'file') ? a.path : '';
       const assetBasePath = realPath ? API + realPath + '/' : API;
       
       // Replace relative image paths: ![alt](./path) or ![alt](path)
@@ -1040,7 +1040,7 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
         if (!found) {
           found = articles.find(a => {
             const aSlug = a.name.replace('.md', '');
-            return aSlug === slug && (!a.path || a.path === '' || a.path === '根目录');
+            return aSlug === slug && (!a.path || a.path === '' || a.path === 'file');
           });
         }
         
@@ -1084,17 +1084,23 @@ const BASE_URL = 'https://api.furry.luxe/moke/';
       const hash = window.location.hash;
       const fullPath = path + hash;
       
-      if (path && path !== '/') {
-        // Wait for articles to load then navigate
-        const checkAndNavigate = () => {
-          if (articles.length > 0) {
+      // Wait for articles to load
+      const checkAndNavigate = () => {
+        if (articles.length > 0) {
+          if (path && path !== '/') {
             navigateToPath(fullPath);
           } else {
-            setTimeout(checkAndNavigate, 100);
+            // Default: open intro page (介绍页.md)
+            const intro = articles.find(a => a.name === '介绍页.md');
+            if (intro) {
+              showArticle(intro, null, null, null);
+            }
           }
-        };
-        checkAndNavigate();
-      }
+        } else {
+          setTimeout(checkAndNavigate, 100);
+        }
+      };
+      checkAndNavigate();
     }
 
     // Search
