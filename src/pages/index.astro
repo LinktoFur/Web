@@ -738,7 +738,11 @@ const BASE_URL = 'https://moke.furry.luxe/';
     let categoryMeta = {};
     
     // Load articles
-    fetch(API + 'api.php').then(r => r.json()).then(data => {
+    fetch(API + 'api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    }).then(r => r.json()).then(data => {
       const loaded = {};
       const folders = data.folders || [];
       
@@ -754,9 +758,17 @@ const BASE_URL = 'https://moke.furry.luxe/';
       
       // Also load root articles (no category)
       const requests = [
-        fetch(API + 'api.php?category=').then(r => r.json()),
+        fetch(API + 'api.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category: '' })
+        }).then(r => r.json()),
         ...topFolders.map(folder => 
-          fetch(API + 'api.php?category=' + encodeURIComponent(folder.path)).then(r => r.json())
+          fetch(API + 'api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: folder.path })
+          }).then(r => r.json())
         )
       ];
 
