@@ -618,7 +618,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
       );
 
       if (!results.length) {
-        searchResults.innerHTML = '<div class="no-result">没有找到相关院校</div>';
+        searchResults.innerHTML = '<div class="no-result"><a href="https://docs.qq.com/form/page/DVVZXV09zUUdDUWJs" target="_blank" rel="noopener" style="color:var(--c-brand);text-decoration:none;">没有找到相关院校的组织，如你是该院校组织的管理员，欢迎填写信息表</a></div>';
       } else {
         searchResults.innerHTML = results.slice(0, 15).map((r, i) => {
           const schoolHtml = r.school.replace(new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>');
