@@ -283,7 +283,11 @@ const BASE_URL = 'https://moke.furry.luxe/';
 
     function showUnionInfo(info) {
       modalTitle.textContent = info.org;
-      const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--c-brand)">$1</a>');
+      const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, url) => {
+        if (url.startsWith('./')) url = API + url.slice(2);
+        else if (url.startsWith('../')) url = API + url.replace(/^\.\.\//, '');
+        return '<a href="' + url + '" target="_blank" rel="noopener" style="color:var(--c-brand)">' + text + '</a>';
+      });
       modalBody.innerHTML = '<div style="line-height:2"><p><strong>组织名字：</strong>' + info.org + '</p><p><strong>联系方式：</strong>' + contactHtml + '</p>' + (info.intro ? '<p><strong>组织介绍：</strong>' + info.intro + '</p>' : '') + '</div>';
       modalOverlay.classList.add('show');
       searchResults.classList.remove('show');
