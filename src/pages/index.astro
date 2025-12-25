@@ -545,7 +545,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
           const schoolName = cells[0].replace(/\*\*/g, '').trim();
           const orgName = cells[1].replace(/\*\*/g, '').trim();
           let contact = cells[2].replace(/\*\*/g, '').trim();
-          contact = contact.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+          // contact = contact.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
           
           if (schoolName && orgName) {
             schools.push({ school: schoolName, org: orgName, contact: contact });
@@ -644,10 +644,15 @@ const BASE_URL = 'https://moke.furry.luxe/';
 
     function showSchoolInfo(info) {
       modalTitle.textContent = info.school;
+      // 把 markdown 链接转成 HTML 链接
+      const contactHtml = info.contact.replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g, 
+        '<a href="$2" target="_blank" rel="noopener" style="color:var(--c-brand)">$1</a>'
+      );
       modalBody.innerHTML = '<div style="line-height:2">' +
         '<p><strong>院校：</strong>' + info.school + '</p>' +
         '<p><strong>组织：</strong>' + info.org + '</p>' +
-        '<p><strong>联系方式：</strong>' + info.contact + '</p>' +
+        '<p><strong>联系方式：</strong>' + contactHtml + '</p>' +
         '<p><strong>地区：</strong>' + info.region + '</p>' +
       '</div>';
       modalOverlay.classList.add('show');
