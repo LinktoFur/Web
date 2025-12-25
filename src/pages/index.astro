@@ -6,7 +6,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LinktoFur Demo</title>
+  <title>Demo</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.0/github-markdown.min.css">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" is:inline></script>
   <style is:global>
@@ -23,9 +23,6 @@ const BASE_URL = 'https://moke.furry.luxe/';
       --c-brand: #646cff;
       --c-brand-light: #747bff;
       --c-highlight-bg: rgba(100, 108, 255, 0.14);
-      --c-highlight-text: #a8b1ff;
-      --sidebar-width: 260px;
-      --header-height: 56px;
       --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
@@ -50,77 +47,49 @@ const BASE_URL = 'https://moke.furry.luxe/';
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Header */
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--header-height);
-      background: var(--c-bg);
-      border-bottom: 1px solid var(--c-border);
-      z-index: 200;
+    /* 主容器 - 居中布局 */
+    .container {
+      min-height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      padding: 0 20px;
-    }
-
-    .header-left {
-      width: var(--sidebar-width);
-      flex-shrink: 0;
-      padding-right: 20px;
+      justify-content: center;
+      padding: 20px;
     }
 
     .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--c-text);
-      text-decoration: none;
-    }
-
-    .logo-icon {
-      width: 26px;
-      height: 26px;
-      background: var(--c-brand);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
+      font-size: 48px;
       font-weight: 700;
-      font-size: 13px;
+      background: linear-gradient(120deg, var(--c-brand) 30%, #42d392);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      text-align: center;
     }
 
-    .header-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      padding: 0 20px;
+    .subtitle {
+      font-size: 16px;
+      color: var(--c-text-3);
+      margin-bottom: 32px;
+      text-align: center;
     }
 
-    .header-right {
-      flex-shrink: 0;
-    }
-
-    /* Search */
+    /* 搜索框 */
     .search-wrap {
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       position: relative;
     }
 
     .search-box {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0 16px;
-      height: 44px;
+      gap: 12px;
+      padding: 0 20px;
+      height: 56px;
       background: var(--c-bg-soft);
       border: 1px solid var(--c-border);
-      border-radius: 10px;
+      border-radius: 12px;
       transition: all 0.2s;
     }
 
@@ -130,8 +99,8 @@ const BASE_URL = 'https://moke.furry.luxe/';
     }
 
     .search-box svg {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       color: var(--c-text-3);
       flex-shrink: 0;
     }
@@ -141,25 +110,14 @@ const BASE_URL = 'https://moke.furry.luxe/';
       height: 100%;
       border: none;
       background: transparent;
-      font-size: 14px;
+      font-size: 16px;
       color: var(--c-text);
       outline: none;
     }
 
     .search-box input::placeholder { color: var(--c-text-3); }
 
-    .search-icon-right {
-      width: 16px;
-      height: 16px;
-      color: var(--c-text-3);
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    
-    .search-icon-right:hover {
-      color: var(--c-brand);
-    }
-
+    /* 搜索结果下拉 */
     .search-results {
       display: none;
       position: absolute;
@@ -168,25 +126,27 @@ const BASE_URL = 'https://moke.furry.luxe/';
       right: 0;
       background: var(--c-bg-soft);
       border: 1px solid var(--c-border);
-      border-radius: 10px;
+      border-radius: 12px;
       max-height: 400px;
       overflow-y: auto;
       box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      z-index: 100;
     }
 
     .search-results.show { display: block; }
 
     .result-item {
-      padding: 12px 16px;
+      padding: 14px 20px;
       cursor: pointer;
       border-bottom: 1px solid var(--c-border);
+      transition: background 0.15s;
     }
 
     .result-item:last-child { border-bottom: none; }
     .result-item:hover { background: var(--c-bg-mute); }
 
     .result-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--c-text);
       margin-bottom: 4px;
@@ -202,17 +162,19 @@ const BASE_URL = 'https://moke.furry.luxe/';
       color: var(--c-text-2);
       margin-top: 6px;
       line-height: 1.5;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
     }
 
     .result-preview mark {
       background: rgba(100, 108, 255, 0.3);
       color: var(--c-brand-light);
       padding: 1px 3px;
+      border-radius: 3px;
+    }
+
+    .search-highlight {
+      background: rgba(100, 108, 255, 0.3);
+      color: var(--c-brand-light);
+      padding: 2px 4px;
       border-radius: 3px;
     }
 
@@ -223,274 +185,114 @@ const BASE_URL = 'https://moke.furry.luxe/';
       color: var(--c-text-3);
     }
 
-    .theme-toggle, .menu-toggle {
-      width: 36px;
-      height: 36px;
+    /* 主题切换 */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
       border: none;
-      background: transparent;
+      background: var(--c-bg-soft);
+      border: 1px solid var(--c-border);
       color: var(--c-text-2);
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
     }
 
-    .theme-toggle:hover, .menu-toggle:hover {
+    .theme-toggle:hover {
       color: var(--c-text);
       background: var(--c-bg-mute);
     }
     
-    .theme-toggle svg, .menu-toggle svg { width: 18px; height: 18px; }
+    .theme-toggle svg { width: 18px; height: 18px; }
 
-    .menu-toggle { display: none; }
-
-    .header-right { display: flex; align-items: center; gap: 4px; }
-
-    /* Mobile overlay */
-    .overlay {
+    /* 弹窗遮罩 */
+    .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 150;
-    }
-    .overlay.show { display: block; }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header">
-    <div class="header-left">
-      <button class="menu-toggle" id="menuToggle" title="菜单">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
-      <a href="/" class="logo" id="logoBtn">
-        <span>LinktoFur Demo</span>
-      </a>
-    </div>
-    <div class="header-center">
-      <div class="search-wrap">
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input type="text" id="searchInput" placeholder="搜索院校..." autocomplete="off">
-          <svg class="search-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-        </div>
-        <div class="search-results" id="searchResults"></div>
-      </div>
-    </div>
-    <div class="header-right">
-      <button class="theme-toggle" id="themeToggle" title="切换主题">
-        <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
-        <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
-          <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-      </button>
-    </div>
-  </header>
-  <div class="overlay" id="overlay"></div>
-
-
-  <style is:global>
-    /* Layout */
-    .layout {
-      display: flex;
-      padding-top: var(--header-height);
-    }
-
-    /* Sidebar */
-    .sidebar {
-      width: var(--sidebar-width);
-      height: calc(100vh - var(--header-height));
-      position: fixed;
-      left: 0;
-      top: var(--header-height);
-      background: var(--c-bg-soft);
-      border-right: 1px solid var(--c-border);
-      overflow-y: auto;
-      padding: 12px 8px;
-    }
-
-    .nav-group { margin-bottom: 8px; }
-
-    .nav-group-title {
-      display: flex;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--c-text-2);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      border-radius: 6px;
-      user-select: none;
+      justify-content: center;
+      padding: 20px;
     }
 
-    .nav-group-title:hover { background: var(--c-bg-mute); }
+    .modal-overlay.show { display: flex; }
 
-    .nav-group-title .folder-icon {
-      width: 14px;
-      height: 14px;
-      color: var(--c-brand);
-    }
-
-    .nav-group-title .chevron {
-      width: 14px;
-      height: 14px;
-      color: var(--c-text-3);
-      margin-left: auto;
-      transition: transform 0.2s;
-    }
-
-    .nav-group.collapsed .nav-group-title .chevron {
-      transform: rotate(-90deg);
-    }
-
-    .nav-group-items {
-      padding-left: 8px;
+    /* 弹窗 */
+    .modal {
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 80vh;
       overflow: hidden;
-      max-height: 1000px;
-      transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.2s ease;
-      opacity: 1;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
 
-    .nav-group.collapsed .nav-group-items {
-      max-height: 0;
-      opacity: 0;
-      padding-top: 0;
-      padding-bottom: 0;
-    }
-
-    .nav-item {
+    .modal-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      font-size: 14px;
-      color: var(--c-text-2);
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--c-border);
     }
 
-    .nav-item:hover {
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: transparent;
+      color: var(--c-text-3);
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
       background: var(--c-bg-mute);
       color: var(--c-text);
     }
 
-    .nav-item.active {
-      background: var(--c-highlight-bg);
-      color: var(--c-brand);
-    }
+    .modal-close svg { width: 20px; height: 20px; }
 
-    .nav-item svg {
-      width: 14px;
-      height: 14px;
-      color: var(--c-text-3);
-      flex-shrink: 0;
-    }
-
-    .nav-item.active svg { color: var(--c-brand); }
-
-    .nav-item.root-item {
-      margin-bottom: 4px;
-    }
-
-    .nav-item-text {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Main */
-    .main {
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
       flex: 1;
-      margin-left: var(--sidebar-width);
-      min-height: calc(100vh - var(--header-height));
     }
 
-    .welcome {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: calc(100vh - var(--header-height));
-    }
-
-    .welcome-inner { text-align: center; }
-
-    .welcome h1 {
-      font-size: 48px;
-      font-weight: 700;
-      background: linear-gradient(120deg, var(--c-brand) 30%, #42d392);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
-    }
-
-    .welcome p {
-      font-size: 16px;
-      color: var(--c-text-3);
-    }
-
-    .article-view {
-      display: none;
-      padding: 40px 32px;
-    }
-
-    .article-view.show { display: block; }
-
-    .article-inner {
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .article-meta {
-      font-size: 13px;
-      color: var(--c-brand-light);
-      margin-bottom: 12px;
-    }
-
-    .article-title {
-      font-size: 36px;
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 32px;
-    }
-
+    /* Markdown 样式 */
     .markdown-body {
       background: transparent !important;
       color: var(--c-text) !important;
-      font-size: 16px;
-      line-height: 1.75;
+      font-size: 15px;
+      line-height: 1.7;
     }
 
     [data-theme="dark"] .markdown-body { color-scheme: dark; }
 
-    /* Table styles */
     .markdown-body table {
       border-collapse: collapse;
       width: 100%;
       margin: 16px 0;
-      background: transparent !important;
-    }
-
-    .markdown-body thead {
-      background: var(--c-bg-mute) !important;
-    }
-
-    .markdown-body tbody {
-      background: transparent !important;
     }
 
     .markdown-body th,
@@ -506,38 +308,12 @@ const BASE_URL = 'https://moke.furry.luxe/';
       font-weight: 600;
     }
 
-    .markdown-body tbody tr {
-      background: transparent !important;
-    }
-
-    .markdown-body tbody tr:nth-child(even) {
-      background: var(--c-bg-soft) !important;
-    }
-
-    .markdown-body tbody tr:hover {
-      background: var(--c-bg-mute) !important;
-    }
-
-    /* Code block styles */
     .markdown-body pre {
       background: var(--c-bg-soft) !important;
       border: 1px solid var(--c-border);
       border-radius: 8px;
     }
 
-    .markdown-body code {
-      background: var(--c-bg-mute);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.9em;
-    }
-
-    .markdown-body pre code {
-      background: transparent;
-      padding: 0;
-    }
-
-    /* Blockquote */
     .markdown-body blockquote {
       border-left: 4px solid var(--c-brand);
       background: var(--c-bg-soft);
@@ -546,41 +322,25 @@ const BASE_URL = 'https://moke.furry.luxe/';
       color: var(--c-text-2);
     }
 
-    /* Images - transparent background */
     .markdown-body img {
-      background: transparent !important;
       max-width: 100%;
       height: auto;
     }
 
-    .markdown-body p img {
-      background: transparent !important;
-    }
-
-    .search-highlight {
-      background: rgba(100, 108, 255, 0.3);
-      color: var(--c-brand-light);
-      padding: 2px 4px;
-      border-radius: 3px;
-    }
-
     /* Footer */
     .footer {
-      border-top: 1px solid var(--c-border);
-      padding: 24px 32px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px;
       text-align: center;
-      margin-top: auto;
-    }
-
-    .footer-inner {
-      max-width: 760px;
-      margin: 0 auto;
     }
 
     .footer p {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--c-text-3);
-      margin: 4px 0;
+      margin: 2px 0;
     }
 
     .footer a {
@@ -588,96 +348,79 @@ const BASE_URL = 'https://moke.furry.luxe/';
       text-decoration: none;
     }
 
-    .footer a:hover {
-      color: var(--c-brand);
-    }
+    .footer a:hover { color: var(--c-brand); }
 
+    /* 移动端适配 */
     @media (max-width: 768px) {
-      .header { padding: 0 12px; gap: 8px; display: flex; }
-      .header-left { width: auto; padding: 0; flex: 0 0 auto; display: flex; align-items: center; gap: 0; }
-      .header-left .logo { display: none; }
-      .menu-toggle { display: flex !important; }
-      .header-center { flex: 1 1 0; padding: 0 8px 0 0; min-width: 130px; }
-      .header-right { flex: 0 0 auto; }
-      .search-wrap { width: 100%; min-width: 130px; }
-      .search-box { width: 100%; min-width: 130px; box-sizing: border-box; height: 42px; padding: 0 12px; }
-      .search-icon-right { display: none; }
-      .search-box input { font-size: 15px; min-width: 0; flex: 1; }
-      .search-box svg { flex-shrink: 0; }
-      
-      .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 160;
-        width: 280px;
-        top: 0;
-        height: 100vh;
-        padding-top: calc(var(--header-height) + 12px);
-      }
-      .sidebar.open { transform: translateX(0); }
-      
-      .main { margin-left: 0; }
-      
-      .search-results {
-        position: fixed;
-        top: calc(var(--header-height) + 8px);
-        left: 12px;
-        right: 12px;
-        max-height: calc(100vh - var(--header-height) - 24px);
-        z-index: 300;
-        width: auto;
-      }
-      
-      .article-view { padding: 24px 16px; }
-      .article-title { font-size: 24px; }
-      .welcome h1 { font-size: 36px; }
-      .welcome p { font-size: 14px; }
-      
-      .overlay.show { z-index: 155; }
+      .logo { font-size: 36px; }
+      .subtitle { font-size: 14px; }
+      .search-box { height: 50px; padding: 0 16px; }
+      .search-box input { font-size: 15px; }
+      .modal { max-height: 90vh; margin: 10px; }
+      .modal-header { padding: 16px 20px; }
+      .modal-body { padding: 20px; }
     }
   </style>
+</head>
+<body>
+  <!-- 主题切换 -->
+  <button class="theme-toggle" id="themeToggle" title="切换主题">
+    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+      <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+    </svg>
+  </button>
 
-  <div class="layout">
-    <aside class="sidebar" id="sidebar"></aside>
-    <main class="main">
-      <div class="welcome" id="welcomeView">
-        <div class="welcome-inner">
-          <h1>Moke</h1>
-          <p>....</p>
-        </div>
+  <!-- 主容器 -->
+  <div class="container">
+    <h1 class="logo">Title</h1>
+    <p class="subtitle">title2</p>
+    
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="输入学校名称..." autocomplete="off">
       </div>
-      <article class="article-view" id="articleView">
-        <div class="article-inner">
-          <div class="article-meta" id="articleMeta"></div>
-          <h1 class="article-title" id="articleTitle"></h1>
-          <div class="markdown-body" id="articleBody"></div>
-        </div>
-      </article>
-      <footer class="footer">
-        <div class="footer-inner">
-          <p>© <span id="footerYear"></span> LinktoFurTeam. All rights reserved.</p>
-          <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京-114514A</a></p>
-        </div>
-      </footer>
-    </main>
+      <div class="search-results" id="searchResults"></div>
+    </div>
   </div>
 
+  <!-- 弹窗 -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">学校信息</h2>
+        <button class="modal-close" id="modalClose">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="markdown-body" id="modalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© <span id="footerYear"></span> LinktoFurTeam</p>
+    <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京-114514A</a></p>
+  </footer>
 
   <script is:inline define:vars={{ BASE_URL }}>
     const API = BASE_URL;
     let articles = [];
     const $ = id => document.getElementById(id);
 
-    // Parse frontmatter (Docusaurus format)
+    // 解析 frontmatter
     function parseFrontmatter(content) {
-      // Standard format: ---\nkey: value\n---
       let match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
-      
-      // Compact format: ---key: value---
-      if (!match) {
-        match = content.match(/^---([^-][\s\S]*?)---\r?\n?/);
-      }
-      
+      if (!match) match = content.match(/^---([^-][\s\S]*?)---\r?\n?/);
       if (!match) return { frontmatter: {}, content };
       
       const fm = {};
@@ -696,12 +439,15 @@ const BASE_URL = 'https://moke.furry.luxe/';
       return parseFrontmatter(content).content;
     }
 
-    function getSidebarPosition(content) {
-      const { frontmatter } = parseFrontmatter(content);
-      return frontmatter.sidebar_position ?? 999;
+    // 获取文章标题
+    function getTitle(content, filename) {
+      let cleaned = removeFrontmatter(content).replace(/\r\n/g, '\n');
+      const match = cleaned.match(/^#\s+(.+)$/m);
+      if (match) return match[1].trim();
+      return filename.replace('.md', '');
     }
 
-    // Theme
+    // 主题切换
     const theme = localStorage.getItem('theme') || 'dark';
     document.documentElement.dataset.theme = theme;
     updateThemeIcon(theme);
@@ -718,45 +464,15 @@ const BASE_URL = 'https://moke.furry.luxe/';
       $('sunIcon').style.display = t === 'light' ? 'block' : 'none';
     }
 
-    // Mobile menu
-    const sidebar = $('sidebar');
-    const overlay = $('overlay');
-    
-    function toggleMenu() {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('show');
-    }
-    
-    $('menuToggle').onclick = toggleMenu;
-    
-    overlay.onclick = () => {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-    };
-
-    // Category metadata from _category_.json
-    let categoryMeta = {};
-    
-    // Load articles
+    // 加载文章
     fetch(API + 'api.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({})
     }).then(r => r.json()).then(data => {
-      const loaded = {};
       const folders = data.folders || [];
-      
-      // Store category metadata (label, position)
-      folders.forEach(f => {
-        if (f.path) {
-          categoryMeta[f.path] = { label: f.label, position: f.position };
-        }
-      });
-      
-      // Filter to only top-level folders (no slash in path)
       const topFolders = folders.filter(f => f.path && !f.path.includes('/'));
       
-      // Also load root articles (no category)
       const requests = [
         fetch(API + 'api.php', {
           method: 'POST',
@@ -773,376 +489,22 @@ const BASE_URL = 'https://moke.furry.luxe/';
       ];
 
       Promise.all(requests).then(results => {
+        const loaded = {};
         results.forEach(d => {
           if (d.articles) {
             d.articles.forEach(a => {
               const key = a.path + '/' + a.name;
               if (!loaded[key]) {
                 loaded[key] = true;
-                articles.push({ path: a.path || 'file', name: a.name, content: a.content });
+                articles.push({ path: a.path || '', name: a.name, content: a.content });
               }
             });
           }
         });
-        renderNav();
       });
     });
 
-    function getNavTitle(a) {
-      // Try to get title from first # heading
-      let cleaned = removeFrontmatter(a.content);
-      cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      const match = cleaned.match(/^#\s+(.+)$/m);
-      if (match) return match[1].trim();
-      return a.name.replace('.md', '');
-    }
-
-    function buildTree(articles) {
-      const tree = { _rootArticles: [], _folders: {} };
-      
-      articles.forEach(a => {
-        a._position = getSidebarPosition(a.content);
-        
-        // Root level articles (no path or empty path)
-        if (!a.path || a.path === '' || a.path === 'file') {
-          tree._rootArticles.push(a);
-          return;
-        }
-        
-        const parts = a.path.split('/');
-        let current = tree._folders;
-        parts.forEach((part, i) => {
-          if (!current[part]) {
-            current[part] = { _articles: [], _children: {} };
-          }
-          if (i === parts.length - 1) {
-            current[part]._articles.push(a);
-          }
-          current = current[part]._children;
-        });
-      });
-      
-      // Sort articles by sidebar_position
-      tree._rootArticles.sort((a, b) => a._position - b._position);
-      
-      function sortTree(node) {
-        node._articles.sort((a, b) => a._position - b._position);
-        Object.values(node._children).forEach(sortTree);
-      }
-      Object.values(tree._folders).forEach(sortTree);
-      
-      return tree;
-    }
-
-    function renderFolders(folders, level = 0, parentPath = '') {
-      // Sort folders by position from categoryMeta
-      const sortedNames = Object.keys(folders).sort((a, b) => {
-        const pathA = parentPath ? parentPath + '/' + a : a;
-        const pathB = parentPath ? parentPath + '/' + b : b;
-        const posA = categoryMeta[pathA]?.position ?? 999;
-        const posB = categoryMeta[pathB]?.position ?? 999;
-        return posA - posB;
-      });
-      
-      let html = '';
-      sortedNames.forEach(name => {
-        const node = folders[name];
-        const hasChildren = Object.keys(node._children).length > 0;
-        const hasArticles = node._articles.length > 0;
-        const indent = level * 12;
-        const fullPath = parentPath ? parentPath + '/' + name : name;
-        const displayName = categoryMeta[fullPath]?.label || name;
-        
-        if (hasArticles || hasChildren) {
-          html += '<div class="nav-group collapsed" style="margin-left:' + indent + 'px">';
-          html += '<div class="nav-group-title">';
-          html += '<svg class="folder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
-          html += '<span>' + displayName + '</span>';
-          html += '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>';
-          html += '</div>';
-          html += '<div class="nav-group-items">';
-          
-          node._articles.forEach(a => {
-            const title = getNavTitle(a);
-            html += '<div class="nav-item" data-path="' + a.path + '" data-name="' + a.name + '">';
-            html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-            html += '<span class="nav-item-text">' + title + '</span>';
-            html += '</div>';
-          });
-          
-          if (hasChildren) {
-            html += renderFolders(node._children, level + 1, fullPath);
-          }
-          
-          html += '</div></div>';
-        }
-      });
-      return html;
-    }
-
-    function renderNav() {
-      const tree = buildTree(articles);
-      const sidebar = $('sidebar');
-      let html = '';
-      
-      // Render root articles first (no folder wrapper)
-      tree._rootArticles.forEach(a => {
-        const title = getNavTitle(a);
-        html += '<div class="nav-item root-item" data-path="' + (a.path || '') + '" data-name="' + a.name + '">';
-        html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-        html += '<span class="nav-item-text">' + title + '</span>';
-        html += '</div>';
-      });
-      
-      // Render folders
-      html += renderFolders(tree._folders);
-      
-      sidebar.innerHTML = html;
-
-      // Toggle collapse
-      sidebar.querySelectorAll('.nav-group-title').forEach(el => {
-        el.onclick = () => {
-          el.parentElement.classList.toggle('collapsed');
-        };
-      });
-
-      sidebar.querySelectorAll('.nav-item').forEach(el => {
-        el.onclick = e => {
-          e.stopPropagation();
-          const path = el.dataset.path;
-          const name = el.dataset.name;
-          const article = articles.find(a => a.path === path && a.name === name);
-          if (article) showArticle(article, el, null, null);
-        };
-      });
-    }
-
-    function getArticleTitle(content, filename) {
-      // Try to get title from first # heading
-      let cleaned = removeFrontmatter(content);
-      cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      const match = cleaned.match(/^#\s+(.+)$/m);
-      if (match) return match[1].trim();
-      return filename.replace('.md', '');
-    }
-
-    function showArticle(a, navEl, keyword, hash) {
-      $('welcomeView').style.display = 'none';
-      $('articleView').classList.add('show');
-      $('articleMeta').textContent = a.path || '';
-      $('articleMeta').style.display = a.path ? 'block' : 'none';
-      $('articleTitle').textContent = getArticleTitle(a.content, a.name);
-      
-      // Remove frontmatter before display
-      let content = removeFrontmatter(a.content);
-      // Normalize line endings
-      content = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-      // Remove first h1 title to avoid duplicate (we show it in article-title)
-      // Use multiline flag to match first # heading anywhere
-      content = content.replace(/^#\s+.+$/m, '').replace(/^\n+/, '');
-      
-      // Replace relative paths with API base URL
-      // a.path could be empty, 'file', or actual folder path
-      const realPath = (a.path && a.path !== 'file') ? a.path : '';
-      const assetBasePath = realPath ? API + realPath + '/' : API;
-      
-      // Replace relative image paths: ![alt](./path) or ![alt](path)
-      content = content.replace(/!\[([^\]]*)\]\((?!https?:\/\/)(?!\/[^/])([^)]+)\)/g, (match, alt, src) => {
-        const cleanSrc = src.replace(/^\.\//, '');
-        return '![' + alt + '](' + assetBasePath + cleanSrc + ')';
-      });
-      
-      // Replace relative link paths that point to assets (not internal routes): [text](./path)
-      content = content.replace(/\[([^\]]+)\]\(\.\/([^)]+)\)/g, (match, text, src) => {
-        return '[' + text + '](' + assetBasePath + src + ')';
-      });
-      
-      // Fix markdown bold/italic with spaces on BOTH sides: ** text ** -> **text**
-      // Only fix when there's space after opening ** AND before closing **
-      content = content.replace(/\*\* ([^*]+) \*\*/g, '**$1**');
-      
-      // Pre-process: parse markdown inside HTML tags like <center>, <h1>-<h6>, etc.
-      content = content.replace(/<(center|h[1-6]|div|span|p)>([\s\S]*?)<\/\1>/gi, (match, tag, inner) => {
-        // Fix bold with spaces on both sides inside HTML tags too
-        let fixed = inner.replace(/\*\* ([^*]+) \*\*/g, '**$1**');
-        // Parse markdown inside HTML tag
-        const parsed = marked.parseInline(fixed);
-        return '<' + tag + '>' + parsed + '</' + tag + '>';
-      });
-      
-      let html = marked.parse(content);
-      // Highlight and mark keyword for scrolling
-      if (keyword) {
-        const escKeyword = esc(keyword);
-        html = html.replace(
-          new RegExp('(' + escKeyword + ')', 'gi'),
-          '<mark class="search-highlight" data-highlight="true">$1</mark>'
-        );
-      }
-      $('articleBody').innerHTML = html;
-
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      if (navEl) navEl.classList.add('active');
-
-      $('searchResults').classList.remove('show');
-      // Close mobile menu
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-      
-      // Scroll to target
-      if (keyword) {
-        setTimeout(() => {
-          const highlight = document.querySelector('.search-highlight[data-highlight="true"]');
-          if (highlight) {
-            highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 100);
-      } else if (hash) {
-        // Scroll to anchor
-        setTimeout(() => {
-          const hashId = decodeURIComponent(hash.slice(1));
-          const target = document.getElementById(hashId);
-          if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
-      } else {
-        window.scrollTo(0, 0);
-      }
-
-      // Update URL
-      const slug = a.name.replace('.md', '');
-      const urlPath = a.path ? '/' + a.path + '/' + slug : '/' + slug;
-      history.pushState({ path: a.path, name: a.name }, '', urlPath + (hash || ''));
-
-      // Handle links in article
-      setTimeout(() => {
-        $('articleBody').querySelectorAll('a').forEach(link => {
-          const href = link.getAttribute('href');
-          if (!href) return;
-          
-          // External links: open in new tab
-          if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) {
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noopener noreferrer');
-          }
-          // Internal links: handle with SPA navigation
-          else if (href.startsWith('/')) {
-            link.onclick = e => {
-              e.preventDefault();
-              navigateToPath(href);
-            };
-          }
-        });
-      }, 0);
-    }
-
-    function navigateToPath(urlPath) {
-      // Extract hash if present
-      let hash = '';
-      let pathWithoutHash = urlPath;
-      const hashIndex = urlPath.indexOf('#');
-      if (hashIndex !== -1) {
-        hash = urlPath.slice(hashIndex);
-        pathWithoutHash = urlPath.slice(0, hashIndex);
-      }
-      
-      // Decode URL-encoded characters (e.g., %E7%AC%AC -> 第)
-      pathWithoutHash = decodeURIComponent(pathWithoutHash);
-      
-      // Remove leading slash and parse path
-      const path = pathWithoutHash.replace(/^\//, '').replace(/\/$/, '');
-      const parts = path.split('/');
-      
-      // Try to find matching article
-      let found = null;
-      
-      if (parts.length >= 1) {
-        const slug = parts[parts.length - 1];
-        const folderPath = parts.slice(0, -1).join('/');
-        
-        // Try exact match: folder/slug matches path and name
-        found = articles.find(a => {
-          const aSlug = a.name.replace('.md', '');
-          const aPath = a.path || '';
-          return aSlug === slug && aPath === folderPath;
-        });
-        
-        // Try: full path matches path + slug
-        if (!found) {
-          found = articles.find(a => {
-            const aSlug = a.name.replace('.md', '');
-            const aPath = a.path || '';
-            const fullPath = aPath ? aPath + '/' + aSlug : aSlug;
-            return fullPath === path;
-          });
-        }
-        
-        // Try: slug only match (for root articles)
-        if (!found) {
-          found = articles.find(a => {
-            const aSlug = a.name.replace('.md', '');
-            return aSlug === slug && (!a.path || a.path === '' || a.path === 'file');
-          });
-        }
-        
-        // Try: path ends with slug (partial match)
-        if (!found) {
-          found = articles.find(a => {
-            const aSlug = a.name.replace('.md', '');
-            const aPath = a.path || '';
-            return aSlug === slug && (aPath.endsWith(folderPath) || folderPath.endsWith(aPath));
-          });
-        }
-      }
-      
-      if (found) {
-        showArticle(found, null, null, hash);
-        // Update nav active state
-        document.querySelectorAll('.nav-item').forEach(el => {
-          if (el.dataset.path === found.path && el.dataset.name === found.name) {
-            el.classList.add('active');
-          }
-        });
-      }
-    }
-
-    // Handle browser back/forward
-    window.onpopstate = e => {
-      if (e.state && e.state.name) {
-        const article = articles.find(a => a.path === e.state.path && a.name === e.state.name);
-        if (article) showArticle(article, null, null, null);
-      } else {
-        $('welcomeView').style.display = 'flex';
-        $('articleView').classList.remove('show');
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      }
-    };
-
-    // Handle initial URL on page load
-    function handleInitialRoute() {
-      // Vercel rewrites all routes to /index.html but keeps pathname and hash
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      const fullPath = path + hash;
-      
-      // Wait for articles to load
-      const checkAndNavigate = () => {
-        if (articles.length > 0) {
-          if (path && path !== '/') {
-            navigateToPath(fullPath);
-          } else {
-            // Default: redirect to /file/intro
-            navigateToPath('/file/intro');
-          }
-        } else {
-          setTimeout(checkAndNavigate, 100);
-        }
-      };
-      checkAndNavigate();
-    }
-
-    // Search
+    // 搜索
     const searchInput = $('searchInput');
     const searchResults = $('searchResults');
     let timer;
@@ -1150,30 +512,51 @@ const BASE_URL = 'https://moke.furry.luxe/';
     searchInput.oninput = e => {
       clearTimeout(timer);
       const q = e.target.value.trim();
-      if (q.length < 2) { searchResults.classList.remove('show'); return; }
+      if (q.length < 1) { searchResults.classList.remove('show'); return; }
       timer = setTimeout(() => search(q), 150);
     };
 
     searchInput.onfocus = () => {
-      if (searchInput.value.trim().length >= 2) searchResults.classList.add('show');
+      if (searchInput.value.trim().length >= 1) search(searchInput.value.trim());
     };
 
     document.onclick = e => {
       if (!e.target.closest('.search-wrap')) searchResults.classList.remove('show');
     };
 
-    document.onkeydown = e => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        searchInput.focus();
-      }
-      if (e.key === 'Escape') searchResults.classList.remove('show');
-    };
+    // 只搜索 pages/ 路径下的文章
+    function isSearchable(article) {
+      return article.path && article.path.startsWith('pages');
+    }
 
+    // 转义正则特殊字符
     function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
+    function parseSchoolTable(content) {
+      const schools = [];
+      const lines = content.split('\n');
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line.startsWith('|') || line.includes(':----:') || line.includes('院校')) continue;
+        
+        const cells = line.split('|').map(c => c.trim()).filter(c => c);
+        if (cells.length >= 3) {
+          const schoolName = cells[0].replace(/\*\*/g, '').trim();
+          const orgName = cells[1].replace(/\*\*/g, '').trim();
+          let contact = cells[2].replace(/\*\*/g, '').trim();
+          contact = contact.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+          
+          if (schoolName && orgName) {
+            schools.push({ school: schoolName, org: orgName, contact: contact });
+          }
+        }
+      }
+      return schools;
+    }    
+
+    // 去除 markdown 格式
     function stripMarkdown(text) {
-      // Remove frontmatter first
       text = removeFrontmatter(text);
       return text
         .replace(/^#{1,6}\s+/gm, '')
@@ -1190,7 +573,8 @@ const BASE_URL = 'https://moke.furry.luxe/';
         .trim();
     }
 
-    function getAllMatches(content, query) {
+    // 获取所有匹配及预览
+    function getMatches(content, query) {
       const clean = stripMarkdown(content);
       const lc = clean.toLowerCase();
       const lq = query.toLowerCase();
@@ -1201,63 +585,123 @@ const BASE_URL = 'https://moke.furry.luxe/';
         if (idx === -1) break;
         const start = Math.max(0, idx - 30);
         const end = Math.min(clean.length, idx + query.length + 50);
-        let text = clean.slice(start, end);
-        if (start > 0) text = '...' + text;
-        if (end < clean.length) text = text + '...';
-        text = text.replace(new RegExp('(' + esc(query) + ')', 'gi'), '<mark>$1</mark>');
-        matches.push({ idx, preview: text });
+        let preview = clean.slice(start, end);
+        if (start > 0) preview = '...' + preview;
+        if (end < clean.length) preview = preview + '...';
+        preview = preview.replace(new RegExp('(' + esc(query) + ')', 'gi'), '<mark>$1</mark>');
+        matches.push({ idx, preview });
         pos = idx + query.length;
       }
       return matches;
     }
-
-    function isSearchable(article) {
-      // 只搜索 pages/ 路径下的文章
-      return article.path && article.path.startsWith('pages');
+    // 构建学校索引
+    let schoolIndex = [];
+    
+    function buildSchoolIndex() {
+      schoolIndex = [];
+      articles.forEach(a => {
+        if (!isSearchable(a)) return;
+        const region = getTitle(a.content, a.name);
+        const schools = parseSchoolTable(a.content);
+        schools.forEach(s => {
+          schoolIndex.push({ ...s, region: region, article: a });
+        });
+      });
     }
 
     function search(q) {
-      const lq = q.toLowerCase();
-      const results = [];
+      if (schoolIndex.length === 0) buildSchoolIndex();
       
-      articles.forEach(a => {
-        if (!isSearchable(a)) return;
-        
-        const nameMatch = a.name.toLowerCase().includes(lq);
-        const matches = getAllMatches(a.content, q);
-        
-        if (matches.length > 0) {
-          matches.forEach(m => {
-            results.push({ article: a, preview: m.preview, matchIdx: m.idx });
-          });
-        } else if (nameMatch) {
-          results.push({ article: a, preview: '', matchIdx: -1 });
-        }
-      });
+      const lq = q.toLowerCase();
+      const results = schoolIndex.filter(s => 
+        s.school.toLowerCase().includes(lq) || s.org.toLowerCase().includes(lq)
+      );
 
       if (!results.length) {
-        searchResults.innerHTML = '<div class="no-result">没有找到结果</div>';
+        searchResults.innerHTML = '<div class="no-result">没有找到相关院校</div>';
       } else {
-        searchResults.innerHTML = results.slice(0, 10).map((r, i) => {
+        searchResults.innerHTML = results.slice(0, 15).map((r, i) => {
+          const schoolHtml = r.school.replace(new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>');
+          const orgHtml = r.org.replace(new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>');
           return '<div class="result-item" data-i="' + i + '">' +
-            '<div class="result-title">' + r.article.name.replace('.md', '') + '</div>' +
-            '<div class="result-path">' + r.article.path + '</div>' +
-            (r.preview ? '<div class="result-preview">' + r.preview + '</div>' : '') +
+            '<div class="result-title">' + schoolHtml + '</div>' +
+            '<div class="result-preview">' + orgHtml + ' · ' + r.region + '</div>' +
           '</div>';
         }).join('');
 
         const resRef = results;
         searchResults.querySelectorAll('.result-item').forEach((el, i) => {
-          el.onclick = () => resRef[i] && showArticle(resRef[i].article, null, q, null);
+          el.onclick = () => showSchoolInfo(resRef[i]);
         });
       }
       searchResults.classList.add('show');
     }
 
-    searchInput.focus();
-    handleInitialRoute();
-    
-    // Set footer year
+    // 弹窗
+    const modalOverlay = $('modalOverlay');
+    const modalTitle = $('modalTitle');
+    const modalBody = $('modalBody');
+
+    function showSchoolInfo(info) {
+      modalTitle.textContent = info.school;
+      modalBody.innerHTML = '<div style="line-height:2">' +
+        '<p><strong>院校：</strong>' + info.school + '</p>' +
+        '<p><strong>组织：</strong>' + info.org + '</p>' +
+        '<p><strong>联系方式：</strong>' + info.contact + '</p>' +
+        '<p><strong>地区：</strong>' + info.region + '</p>' +
+      '</div>';
+      modalOverlay.classList.add('show');
+      searchResults.classList.remove('show');
+    }
+
+    function showModal(article, keyword) {
+      modalTitle.textContent = getTitle(article.content, article.name);
+      
+      let content = removeFrontmatter(article.content);
+      content = content.replace(/\r\n/g, '\n');
+      content = content.replace(/^#\s+.+$/m, '').replace(/^\n+/, '');
+      
+      // 处理相对路径
+      const basePath = article.path ? API + article.path + '/' : API;
+      content = content.replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, (m, alt, src) => {
+        return '![' + alt + '](' + basePath + src.replace(/^\.\//, '') + ')';
+      });
+      
+      let html = marked.parse(content);
+      
+      // 高亮关键词
+      if (keyword) {
+        html = html.replace(
+          new RegExp('(' + esc(keyword) + ')', 'gi'),
+          '<mark class="search-highlight" data-highlight="true">$1</mark>'
+        );
+      }
+      
+      modalBody.innerHTML = html;
+      modalOverlay.classList.add('show');
+      searchResults.classList.remove('show');
+      
+      // 滚动到高亮位置
+      if (keyword) {
+        setTimeout(() => {
+          const highlight = modalBody.querySelector('.search-highlight[data-highlight="true"]');
+          if (highlight) {
+            highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+
+    $('modalClose').onclick = () => modalOverlay.classList.remove('show');
+    modalOverlay.onclick = e => {
+      if (e.target === modalOverlay) modalOverlay.classList.remove('show');
+    };
+
+    document.onkeydown = e => {
+      if (e.key === 'Escape') modalOverlay.classList.remove('show');
+    };
+
+    // Footer 年份
     $('footerYear').textContent = new Date().getFullYear();
   </script>
 </body>
