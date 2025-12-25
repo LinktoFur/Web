@@ -11,402 +11,92 @@ const BASE_URL = 'https://moke.furry.luxe/';
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" is:inline></script>
   <style is:global>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
     :root {
-      --c-bg: #1a1a1d;
-      --c-bg-soft: #242428;
-      --c-bg-mute: #2e2e33;
-      --c-border: #3a3a40;
-      --c-text: #e8e8ed;
-      --c-text-2: #b8b8c0;
-      --c-text-3: #888890;
-      --c-brand: #646cff;
-      --c-brand-light: #747bff;
-      --c-highlight-bg: rgba(100, 108, 255, 0.14);
+      --c-bg: #1a1a1d; --c-bg-soft: #242428; --c-bg-mute: #2e2e33; --c-border: #3a3a40;
+      --c-text: #e8e8ed; --c-text-2: #b8b8c0; --c-text-3: #888890;
+      --c-brand: #646cff; --c-brand-light: #747bff; --c-highlight-bg: rgba(100, 108, 255, 0.14);
       --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-
     [data-theme="light"] {
-      --c-bg: #ffffff;
-      --c-bg-soft: #f9f9f9;
-      --c-bg-mute: #f1f1f1;
-      --c-border: #e2e2e3;
-      --c-text: #213547;
-      --c-text-2: #476582;
-      --c-text-3: #8e8e93;
-      --c-highlight-bg: rgba(100, 108, 255, 0.08);
+      --c-bg: #ffffff; --c-bg-soft: #f9f9f9; --c-bg-mute: #f1f1f1; --c-border: #e2e2e3;
+      --c-text: #213547; --c-text-2: #476582; --c-text-3: #8e8e93; --c-highlight-bg: rgba(100, 108, 255, 0.08);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    html, body { 
-      height: 100%;
-      font-family: var(--font);
-      background: var(--c-bg);
-      color: var(--c-text);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* 主容器 - 居中布局 */
-    .container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .logo {
-      font-size: 48px;
-      font-weight: 700;
-      background: linear-gradient(120deg, var(--c-brand) 30%, #42d392);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: var(--c-text-3);
-      margin-bottom: 32px;
-      text-align: center;
-    }
-
-    /* 搜索框 */
-    .search-wrap {
-      width: 100%;
-      max-width: 500px;
-      position: relative;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 0 20px;
-      height: 56px;
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 12px;
-      transition: all 0.2s;
-    }
-
-    .search-box:focus-within {
-      border-color: var(--c-brand);
-      box-shadow: 0 0 0 3px var(--c-highlight-bg);
-    }
-
-    .search-box svg {
-      width: 20px;
-      height: 20px;
-      color: var(--c-text-3);
-      flex-shrink: 0;
-    }
-
-    .search-box input {
-      flex: 1;
-      height: 100%;
-      border: none;
-      background: transparent;
-      font-size: 16px;
-      color: var(--c-text);
-      outline: none;
-    }
-
+    html, body { height: 100%; font-family: var(--font); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; }
+    .container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    .logo { font-size: 48px; font-weight: 700; background: linear-gradient(120deg, var(--c-brand) 30%, #42d392); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center; }
+    .subtitle { font-size: 16px; color: var(--c-text-3); margin-bottom: 32px; text-align: center; }
+    .search-wrap { width: 100%; max-width: 600px; position: relative; display: flex; align-items: center; gap: 12px; }
+    .search-box { display: flex; align-items: center; gap: 12px; padding: 0 20px; height: 56px; background: var(--c-bg-soft); border: 1px solid var(--c-border); border-radius: 12px; transition: all 0.2s; flex: 1; }
+    .search-box:focus-within { border-color: var(--c-brand); box-shadow: 0 0 0 3px var(--c-highlight-bg); }
+    .category-select { padding: 12px 16px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text); border-radius: 12px; font-size: 14px; cursor: pointer; outline: none; flex-shrink: 0; height: 56px; }
+    .category-select:hover { background: var(--c-bg-mute); }
+    .category-select:focus { border-color: var(--c-brand); box-shadow: 0 0 0 3px var(--c-highlight-bg); }
+    .search-box svg { width: 20px; height: 20px; color: var(--c-text-3); flex-shrink: 0; }
+    .search-box input { flex: 1; height: 100%; border: none; background: transparent; font-size: 16px; color: var(--c-text); outline: none; }
     .search-box input::placeholder { color: var(--c-text-3); }
-
-    /* 搜索结果下拉 */
-    .search-results {
-      display: none;
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      border-radius: 12px;
-      max-height: 400px;
-      overflow-y: auto;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-      z-index: 100;
-    }
-
+    .search-results { display: none; position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--c-bg-soft); border: 1px solid var(--c-border); border-radius: 12px; max-height: 400px; overflow-y: auto; box-shadow: 0 12px 40px rgba(0,0,0,0.4); z-index: 100; }
     .search-results.show { display: block; }
-
-    .result-item {
-      padding: 14px 20px;
-      cursor: pointer;
-      border-bottom: 1px solid var(--c-border);
-      transition: background 0.15s;
-    }
-
+    .result-item { padding: 14px 20px; cursor: pointer; border-bottom: 1px solid var(--c-border); transition: background 0.15s; }
     .result-item:last-child { border-bottom: none; }
     .result-item:hover { background: var(--c-bg-mute); }
-
-    .result-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--c-text);
-      margin-bottom: 4px;
-    }
-
-    .result-path {
-      font-size: 12px;
-      color: var(--c-brand-light);
-    }
-
-    .result-preview {
-      font-size: 13px;
-      color: var(--c-text-2);
-      margin-top: 6px;
-      line-height: 1.5;
-    }
-
-    .result-preview mark {
-      background: rgba(100, 108, 255, 0.3);
-      color: var(--c-brand-light);
-      padding: 1px 3px;
-      border-radius: 3px;
-    }
-
-    .search-highlight {
-      background: rgba(100, 108, 255, 0.3);
-      color: var(--c-brand-light);
-      padding: 2px 4px;
-      border-radius: 3px;
-    }
-
-    .no-result {
-      padding: 24px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--c-text-3);
-    }
-
-    /* 主题切换 */
-    .theme-toggle {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border: none;
-      background: var(--c-bg-soft);
-      border: 1px solid var(--c-border);
-      color: var(--c-text-2);
-      cursor: pointer;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-
-    .theme-toggle:hover {
-      color: var(--c-text);
-      background: var(--c-bg-mute);
-    }
-    
+    .result-title { font-size: 15px; font-weight: 600; color: var(--c-text); margin-bottom: 4px; }
+    .result-preview { font-size: 13px; color: var(--c-text-2); margin-top: 6px; line-height: 1.5; }
+    .result-preview mark { background: rgba(100, 108, 255, 0.3); color: var(--c-brand-light); padding: 1px 3px; border-radius: 3px; }
+    .no-result { padding: 24px; text-align: center; font-size: 14px; color: var(--c-text-3); }
+    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 40px; height: 40px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text-2); cursor: pointer; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .theme-toggle:hover { color: var(--c-text); background: var(--c-bg-mute); }
     .theme-toggle svg { width: 18px; height: 18px; }
-
-    /* 弹窗遮罩 */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
-
-    /* 弹窗 */
-    .modal {
-      background: var(--c-bg);
-      border: 1px solid var(--c-border);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 700px;
-      max-height: 80vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--c-border);
-    }
-
-    .modal-title {
-      font-size: 20px;
-      font-weight: 600;
-    }
-
-    .modal-close {
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: transparent;
-      color: var(--c-text-3);
-      cursor: pointer;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .modal-close:hover {
-      background: var(--c-bg-mute);
-      color: var(--c-text);
-    }
-
+    .modal { background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 16px; width: 100%; max-width: 700px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--c-border); }
+    .modal-title { font-size: 20px; font-weight: 600; }
+    .modal-close { width: 32px; height: 32px; border: none; background: transparent; color: var(--c-text-3); cursor: pointer; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { background: var(--c-bg-mute); color: var(--c-text); }
     .modal-close svg { width: 20px; height: 20px; }
-
-    .modal-body {
-      padding: 24px;
-      overflow-y: auto;
-      flex: 1;
-    }
-
-    /* Markdown 样式 */
-    .markdown-body {
-      background: transparent !important;
-      color: var(--c-text) !important;
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    [data-theme="dark"] .markdown-body { color-scheme: dark; }
-
-    .markdown-body table {
-      border-collapse: collapse;
-      width: 100%;
-      margin: 16px 0;
-    }
-
-    .markdown-body th,
-    .markdown-body td {
-      border: 1px solid var(--c-border) !important;
-      padding: 10px 14px;
-      text-align: left;
-      background: transparent !important;
-    }
-
-    .markdown-body th {
-      background: var(--c-bg-mute) !important;
-      font-weight: 600;
-    }
-
-    .markdown-body pre {
-      background: var(--c-bg-soft) !important;
-      border: 1px solid var(--c-border);
-      border-radius: 8px;
-    }
-
-    .markdown-body blockquote {
-      border-left: 4px solid var(--c-brand);
-      background: var(--c-bg-soft);
-      padding: 12px 16px;
-      margin: 16px 0;
-      color: var(--c-text-2);
-    }
-
-    .markdown-body img {
-      max-width: 100%;
-      height: auto;
-    }
-
-    /* Footer */
-    .footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .footer p {
-      font-size: 12px;
-      color: var(--c-text-3);
-      margin: 2px 0;
-    }
-
-    .footer a {
-      color: var(--c-text-3);
-      text-decoration: none;
-    }
-
+    .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+    .modal-body .markdown-body { background: transparent; color: var(--c-text); }
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; text-align: center; }
+    .footer p { font-size: 12px; color: var(--c-text-3); margin: 2px 0; }
+    .footer a { color: var(--c-text-3); text-decoration: none; }
     .footer a:hover { color: var(--c-brand); }
-
-    /* 移动端适配 */
     @media (max-width: 768px) {
-      .logo { font-size: 36px; }
-      .subtitle { font-size: 14px; }
-      .search-box { height: 50px; padding: 0 16px; }
-      .search-box input { font-size: 15px; }
-      .modal { max-height: 90vh; margin: 10px; }
-      .modal-header { padding: 16px 20px; }
-      .modal-body { padding: 20px; }
+      .logo { font-size: 36px; } .subtitle { font-size: 14px; }
+      .search-box { height: 50px; padding: 0 16px; } .search-box input { font-size: 15px; }
+      .modal { max-height: 90vh; margin: 10px; } .modal-header { padding: 16px 20px; } .modal-body { padding: 20px; }
     }
   </style>
 </head>
 <body>
-  <!-- 主题切换 -->
   <button class="theme-toggle" id="themeToggle" title="切换主题">
-    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-    </svg>
-    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
-      <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-    </svg>
+    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
   </button>
-
-  <!-- 主容器 -->
   <div class="container">
     <h1 class="logo">Title</h1>
     <p class="subtitle">title2</p>
-    
     <div class="search-wrap">
+      <select id="categorySelect" class="category-select">
+        <option value="school">院校</option>
+        <option value="union">地区联合群</option>
+      </select>
       <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="searchInput" placeholder="输入学校名称..." autocomplete="off">
       </div>
       <div class="search-results" id="searchResults"></div>
     </div>
   </div>
-
-  <!-- 弹窗 -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
         <h2 class="modal-title" id="modalTitle">学校信息</h2>
-        <button class="modal-close" id="modalClose">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
+        <button class="modal-close" id="modalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
-      <div class="modal-body">
-        <div class="markdown-body" id="modalBody"></div>
-      </div>
+      <div class="modal-body"><div class="markdown-body" id="modalBody"></div></div>
     </div>
   </div>
-
-  <!-- Footer -->
   <footer class="footer">
     <p>© <span id="footerYear"></span> LinktoFurTeam</p>
     <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京-114514A</a></p>
@@ -417,96 +107,61 @@ const BASE_URL = 'https://moke.furry.luxe/';
     let articles = [];
     const $ = id => document.getElementById(id);
 
-    // 解析 frontmatter
     function parseFrontmatter(content) {
       let match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
       if (!match) match = content.match(/^---([^-][\s\S]*?)---\r?\n?/);
       if (!match) return { frontmatter: {}, content };
-      
       const fm = {};
       match[1].split(/\r?\n/).forEach(line => {
         const idx = line.indexOf(':');
-        if (idx > 0) {
-          const key = line.slice(0, idx).trim();
-          const val = line.slice(idx + 1).trim();
-          fm[key] = isNaN(val) ? val : Number(val);
-        }
+        if (idx > 0) { fm[line.slice(0, idx).trim()] = line.slice(idx + 1).trim(); }
       });
       return { frontmatter: fm, content: content.slice(match[0].length) };
     }
 
-    function removeFrontmatter(content) {
-      return parseFrontmatter(content).content;
-    }
+    function removeFrontmatter(content) { return parseFrontmatter(content).content; }
 
-    // 获取文章标题
     function getTitle(content, filename) {
-      let cleaned = removeFrontmatter(content).replace(/\r\n/g, '\n');
+      const cleaned = removeFrontmatter(content).replace(/\r\n/g, '\n');
       const match = cleaned.match(/^#\s+(.+)$/m);
-      if (match) return match[1].trim();
-      return filename.replace('.md', '');
+      return match ? match[1].trim() : filename.replace('.md', '');
     }
 
-    // 主题切换
     const theme = localStorage.getItem('theme') || 'dark';
     document.documentElement.dataset.theme = theme;
-    updateThemeIcon(theme);
+    $('moonIcon').style.display = theme === 'dark' ? 'block' : 'none';
+    $('sunIcon').style.display = theme === 'light' ? 'block' : 'none';
 
     $('themeToggle').onclick = () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       document.documentElement.dataset.theme = next;
       localStorage.setItem('theme', next);
-      updateThemeIcon(next);
+      $('moonIcon').style.display = next === 'dark' ? 'block' : 'none';
+      $('sunIcon').style.display = next === 'light' ? 'block' : 'none';
     };
 
-    function updateThemeIcon(t) {
-      $('moonIcon').style.display = t === 'dark' ? 'block' : 'none';
-      $('sunIcon').style.display = t === 'light' ? 'block' : 'none';
-    }
-
-    // 加载文章
-    fetch(API + 'api.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
-    }).then(r => r.json()).then(data => {
-      const folders = data.folders || [];
-      const topFolders = folders.filter(f => f.path && !f.path.includes('/'));
-      
-      const requests = [
-        fetch(API + 'api.php', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ category: '' })
-        }).then(r => r.json()),
-        ...topFolders.map(folder => 
-          fetch(API + 'api.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ category: folder.path })
-          }).then(r => r.json())
-        )
-      ];
-
-      Promise.all(requests).then(results => {
-        const loaded = {};
-        results.forEach(d => {
-          if (d.articles) {
-            d.articles.forEach(a => {
+    fetch(API + 'api.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+      .then(r => r.json()).then(data => {
+        const folders = data.folders || [];
+        const topFolders = folders.filter(f => f.path && !f.path.includes('/'));
+        const requests = [
+          fetch(API + 'api.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category: '' }) }).then(r => r.json()),
+          ...topFolders.map(f => fetch(API + 'api.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ category: f.path }) }).then(r => r.json()))
+        ];
+        Promise.all(requests).then(results => {
+          const loaded = {};
+          results.forEach(d => {
+            if (d.articles) d.articles.forEach(a => {
               const key = a.path + '/' + a.name;
-              if (!loaded[key]) {
-                loaded[key] = true;
-                articles.push({ path: a.path || '', name: a.name, content: a.content });
-              }
+              if (!loaded[key]) { loaded[key] = true; articles.push({ path: a.path || '', name: a.name, content: a.content }); }
             });
-          }
+          });
         });
       });
-    });
 
-    // 搜索
     const searchInput = $('searchInput');
     const searchResults = $('searchResults');
+    const categorySelect = $('categorySelect');
     let timer;
 
     searchInput.oninput = e => {
@@ -515,107 +170,49 @@ const BASE_URL = 'https://moke.furry.luxe/';
       if (q.length < 1) { searchResults.classList.remove('show'); return; }
       timer = setTimeout(() => search(q), 150);
     };
+    searchInput.onfocus = () => { if (searchInput.value.trim().length >= 1) search(searchInput.value.trim()); };
+    categorySelect.onchange = () => { const q = searchInput.value.trim(); if (q.length >= 1) search(q); };
+    document.onclick = e => { if (!e.target.closest('.search-wrap')) searchResults.classList.remove('show'); };
 
-    searchInput.onfocus = () => {
-      if (searchInput.value.trim().length >= 1) search(searchInput.value.trim());
-    };
-
-    document.onclick = e => {
-      if (!e.target.closest('.search-wrap')) searchResults.classList.remove('show');
-    };
-
-    // 只搜索 pages/ 路径下的文章
-    function isSearchable(article) {
-      return article.path && article.path.startsWith('pages');
+    function isSearchable(article, category) {
+      if (!article.path) return false;
+      if (category === 'union') return article.path.startsWith('pages/联合群');
+      return article.path.startsWith('pages') && !article.path.includes('联合群');
     }
 
-    // 转义正则特殊字符
     function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
     function parseSchoolTable(content) {
       const schools = [];
-      const lines = content.split('\n');
-      
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line.startsWith('|') || line.includes(':----:') || line.includes('院校')) continue;
-        
+      content.split('\n').forEach(line => {
+        line = line.trim();
+        if (!line.startsWith('|') || line.includes(':----:') || line.includes('院校')) return;
         const cells = line.split('|').map(c => c.trim()).filter(c => c);
         if (cells.length >= 3) {
-          const schoolName = cells[0].replace(/\*\*/g, '').trim();
-          const orgName = cells[1].replace(/\*\*/g, '').trim();
-          let contact = cells[2].replace(/\*\*/g, '').trim();
-          // contact = contact.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-          
-          if (schoolName && orgName) {
-            schools.push({ school: schoolName, org: orgName, contact: contact });
-          }
+          const school = cells[0].replace(/\*\*/g, '').trim();
+          const org = cells[1].replace(/\*\*/g, '').trim();
+          const contact = cells[2].replace(/\*\*/g, '').trim();
+          if (school && org) schools.push({ school, org, contact });
         }
-      }
+      });
       return schools;
-    }    
-
-    // 去除 markdown 格式
-    function stripMarkdown(text) {
-      text = removeFrontmatter(text);
-      return text
-        .replace(/^#{1,6}\s+/gm, '')
-        .replace(/\*\*([^*]+)\*\*/g, '$1')
-        .replace(/\*([^*]+)\*/g, '$1')
-        .replace(/`([^`]+)`/g, '$1')
-        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-        .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
-        .replace(/^[-*+]\s+/gm, '')
-        .replace(/^\d+\.\s+/gm, '')
-        .replace(/^>\s+/gm, '')
-        .replace(/\|/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
     }
 
-    // 获取所有匹配及预览
-    function getMatches(content, query) {
-      const clean = stripMarkdown(content);
-      const lc = clean.toLowerCase();
-      const lq = query.toLowerCase();
-      const matches = [];
-      let pos = 0;
-      while (pos < lc.length) {
-        const idx = lc.indexOf(lq, pos);
-        if (idx === -1) break;
-        const start = Math.max(0, idx - 30);
-        const end = Math.min(clean.length, idx + query.length + 50);
-        let preview = clean.slice(start, end);
-        if (start > 0) preview = '...' + preview;
-        if (end < clean.length) preview = preview + '...';
-        preview = preview.replace(new RegExp('(' + esc(query) + ')', 'gi'), '<mark>$1</mark>');
-        matches.push({ idx, preview });
-        pos = idx + query.length;
-      }
-      return matches;
-    }
-    // 构建学校索引
     let schoolIndex = [];
-    
-    function buildSchoolIndex() {
+
+    function buildSchoolIndex(category) {
       schoolIndex = [];
       articles.forEach(a => {
-        if (!isSearchable(a)) return;
+        if (!isSearchable(a, category)) return;
         const region = getTitle(a.content, a.name);
-        const schools = parseSchoolTable(a.content);
-        schools.forEach(s => {
-          schoolIndex.push({ ...s, region: region, article: a });
-        });
+        parseSchoolTable(a.content).forEach(s => schoolIndex.push({ ...s, region, article: a }));
       });
     }
 
     function search(q) {
-      if (schoolIndex.length === 0) buildSchoolIndex();
-      
+      buildSchoolIndex(categorySelect.value);
       const lq = q.toLowerCase();
-      const results = schoolIndex.filter(s => 
-        s.school.toLowerCase().includes(lq) || s.org.toLowerCase().includes(lq)
-      );
+      const results = schoolIndex.filter(s => s.school.toLowerCase().includes(lq) || s.org.toLowerCase().includes(lq));
 
       if (!results.length) {
         searchResults.innerHTML = '<div class="no-result"><a href="https://docs.qq.com/form/page/DVVZXV09zUUdDUWJs" target="_blank" rel="noopener" style="color:var(--c-brand);text-decoration:none;">没有找到相关院校的组织，如你是该院校组织的管理员，欢迎填写信息表</a></div>';
@@ -623,90 +220,29 @@ const BASE_URL = 'https://moke.furry.luxe/';
         searchResults.innerHTML = results.slice(0, 15).map((r, i) => {
           const schoolHtml = r.school.replace(new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>');
           const orgHtml = r.org.replace(new RegExp('(' + esc(q) + ')', 'gi'), '<mark>$1</mark>');
-          return '<div class="result-item" data-i="' + i + '">' +
-            '<div class="result-title">' + schoolHtml + '</div>' +
-            '<div class="result-preview">' + orgHtml + ' · ' + r.region + '</div>' +
-          '</div>';
+          return '<div class="result-item" data-i="' + i + '"><div class="result-title">' + schoolHtml + '</div><div class="result-preview">' + orgHtml + ' · ' + r.region + '</div></div>';
         }).join('');
-
         const resRef = results;
-        searchResults.querySelectorAll('.result-item').forEach((el, i) => {
-          el.onclick = () => showSchoolInfo(resRef[i]);
-        });
+        searchResults.querySelectorAll('.result-item').forEach((el, i) => { el.onclick = () => showSchoolInfo(resRef[i]); });
       }
       searchResults.classList.add('show');
     }
 
-    // 弹窗
     const modalOverlay = $('modalOverlay');
     const modalTitle = $('modalTitle');
     const modalBody = $('modalBody');
 
     function showSchoolInfo(info) {
       modalTitle.textContent = info.school;
-      // 把 markdown 链接转成 HTML 链接
-      const contactHtml = info.contact.replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g, 
-        '<a href="$2" target="_blank" rel="noopener" style="color:var(--c-brand)">$1</a>'
-      );
-      modalBody.innerHTML = '<div style="line-height:2">' +
-        '<p><strong>院校：</strong>' + info.school + '</p>' +
-        '<p><strong>组织：</strong>' + info.org + '</p>' +
-        '<p><strong>联系方式：</strong>' + contactHtml + '</p>' +
-        '<p><strong>地区：</strong>' + info.region + '</p>' +
-      '</div>';
+      const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--c-brand)">$1</a>');
+      modalBody.innerHTML = '<div style="line-height:2"><p><strong>院校：</strong>' + info.school + '</p><p><strong>组织：</strong>' + info.org + '</p><p><strong>联系方式：</strong>' + contactHtml + '</p><p><strong>地区：</strong>' + info.region + '</p></div>';
       modalOverlay.classList.add('show');
       searchResults.classList.remove('show');
-    }
-
-    function showModal(article, keyword) {
-      modalTitle.textContent = getTitle(article.content, article.name);
-      
-      let content = removeFrontmatter(article.content);
-      content = content.replace(/\r\n/g, '\n');
-      content = content.replace(/^#\s+.+$/m, '').replace(/^\n+/, '');
-      
-      // 处理相对路径
-      const basePath = article.path ? API + article.path + '/' : API;
-      content = content.replace(/!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g, (m, alt, src) => {
-        return '![' + alt + '](' + basePath + src.replace(/^\.\//, '') + ')';
-      });
-      
-      let html = marked.parse(content);
-      
-      // 高亮关键词
-      if (keyword) {
-        html = html.replace(
-          new RegExp('(' + esc(keyword) + ')', 'gi'),
-          '<mark class="search-highlight" data-highlight="true">$1</mark>'
-        );
-      }
-      
-      modalBody.innerHTML = html;
-      modalOverlay.classList.add('show');
-      searchResults.classList.remove('show');
-      
-      // 滚动到高亮位置
-      if (keyword) {
-        setTimeout(() => {
-          const highlight = modalBody.querySelector('.search-highlight[data-highlight="true"]');
-          if (highlight) {
-            highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
-        }, 100);
-      }
     }
 
     $('modalClose').onclick = () => modalOverlay.classList.remove('show');
-    modalOverlay.onclick = e => {
-      if (e.target === modalOverlay) modalOverlay.classList.remove('show');
-    };
-
-    document.onkeydown = e => {
-      if (e.key === 'Escape') modalOverlay.classList.remove('show');
-    };
-
-    // Footer 年份
+    modalOverlay.onclick = e => { if (e.target === modalOverlay) modalOverlay.classList.remove('show'); };
+    document.onkeydown = e => { if (e.key === 'Escape') modalOverlay.classList.remove('show'); };
     $('footerYear').textContent = new Date().getFullYear();
   </script>
 </body>

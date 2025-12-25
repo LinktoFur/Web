@@ -25,9 +25,10 @@ function getCategoryMeta($dir) {
 function scanArticles($dir, $baseDir = '') {
     $result = [];
     $items = scandir($dir);
+    $exclude = ['.', '..', '_category_.json', '.git', '.vscode', '.kiro'];
     
     foreach ($items as $item) {
-        if ($item === '.' || $item === '..' || $item === '_category_.json') continue;
+        if (in_array($item, $exclude)) continue;
         
         $path = $dir . '/' . $item;
         $relativePath = $baseDir ? $baseDir . '/' . $item : $item;
@@ -51,9 +52,10 @@ function scanArticles($dir, $baseDir = '') {
 function getFolders($dir, $baseDir = '') {
     $folders = [];
     $items = scandir($dir);
+    $exclude = ['.', '..', '.git', '.vscode', '.kiro'];
     
     foreach ($items as $item) {
-        if ($item === '.' || $item === '..') continue;
+        if (in_array($item, $exclude)) continue;
         
         $path = $dir . '/' . $item;
         $relativePath = $baseDir ? $baseDir . '/' . $item : $item;
@@ -78,7 +80,7 @@ $baseDir = __DIR__;
 if ($category === null) {
     $folders = getFolders($baseDir);
     $folders = array_filter($folders, function($f) {
-        return !in_array($f, ['.git', '.vscode', '.kiro']);
+        return !in_array($f['path'], ['.git', '.vscode', '.kiro']);
     });
     echo json_encode([
         'folders' => array_values($folders)
