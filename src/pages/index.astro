@@ -23,7 +23,26 @@ const BASE_URL = 'https://moke.furry.luxe/';
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; font-family: var(--font); background: var(--c-bg); color: var(--c-text); -webkit-font-smoothing: antialiased; }
-    .container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    
+    /* Navbar */
+    .navbar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--c-bg-soft); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; z-index: 100; }
+    .nav-brand { font-size: 18px; font-weight: 700; color: var(--c-brand); }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-link { padding: 8px 16px; border-radius: 8px; color: var(--c-text-2); text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.2s; cursor: pointer; border: none; background: none; }
+    .nav-link:hover { color: var(--c-text); background: var(--c-bg-mute); }
+    .nav-link.active { color: var(--c-brand); background: var(--c-highlight-bg); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle { width: 36px; height: 36px; border: 1px solid var(--c-border); background: var(--c-bg); color: var(--c-text-2); cursor: pointer; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .theme-toggle:hover { color: var(--c-text); background: var(--c-bg-mute); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+
+    /* Pages */
+    .page { display: none; min-height: 100vh; padding-top: 100px; }
+    .page.active { display: block; }
+    
+    /* Home page */
+    .home-page { display: none; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 20px; padding-top: 100px; }
+    .home-page.active { display: flex; }
     .logo { font-size: 48px; font-weight: 700; background: linear-gradient(120deg, var(--c-brand) 30%, #42d392); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; text-align: center; }
     .subtitle { font-size: 16px; color: var(--c-text-3); margin-bottom: 32px; text-align: center; }
     .search-wrap { width: 100%; max-width: 600px; position: relative; display: flex; align-items: center; gap: 12px; }
@@ -31,7 +50,6 @@ const BASE_URL = 'https://moke.furry.luxe/';
     .search-box:focus-within { border-color: var(--c-brand); box-shadow: 0 0 0 3px var(--c-highlight-bg); }
     .category-select { padding: 12px 16px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text); border-radius: 12px; font-size: 14px; cursor: pointer; outline: none; flex-shrink: 0; height: 56px; }
     .category-select:hover { background: var(--c-bg-mute); }
-    .category-select:focus { border-color: var(--c-brand); box-shadow: 0 0 0 3px var(--c-highlight-bg); }
     .search-box svg { width: 20px; height: 20px; color: var(--c-text-3); flex-shrink: 0; }
     .search-box input { flex: 1; height: 100%; border: none; background: transparent; font-size: 16px; color: var(--c-text); outline: none; }
     .search-box input::placeholder { color: var(--c-text-3); }
@@ -44,9 +62,31 @@ const BASE_URL = 'https://moke.furry.luxe/';
     .result-preview { font-size: 13px; color: var(--c-text-2); margin-top: 6px; line-height: 1.5; }
     .result-preview mark { background: rgba(100, 108, 255, 0.3); color: var(--c-brand-light); padding: 1px 3px; border-radius: 3px; }
     .no-result { padding: 24px; text-align: center; font-size: 14px; color: var(--c-text-3); }
-    .theme-toggle { position: fixed; top: 20px; right: 20px; width: 40px; height: 40px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text-2); cursor: pointer; border-radius: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
-    .theme-toggle:hover { color: var(--c-text); background: var(--c-bg-mute); }
-    .theme-toggle svg { width: 18px; height: 18px; }
+    .no-result-link { color: var(--c-brand); text-decoration: none; cursor: pointer; }
+    .no-result-link:hover { text-decoration: underline; }
+    
+    /* Docs page */
+    .docs-page { padding: 120px 24px 80px; max-width: 900px; margin: 0 auto; }
+    .docs-nav { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+    .docs-nav-btn { padding: 10px 20px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text-2); border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+    .docs-nav-btn:hover { background: var(--c-bg-mute); color: var(--c-text); }
+    .docs-nav-btn.active { background: var(--c-brand); color: white; border-color: var(--c-brand); }
+    .docs-content { background: var(--c-bg-soft); border: 1px solid var(--c-border); border-radius: 12px; padding: 32px; }
+    .docs-content .markdown-body { background: transparent; color: var(--c-text); }
+    .docs-content .markdown-body center, .about-content .markdown-body center, .modal-body .markdown-body center { display: block; text-align: center; }
+    .markdown-body img { background: transparent !important; }
+    .markdown-body table { background: transparent !important; }
+    .markdown-body table tr { background: transparent !important; border-top: 1px solid var(--c-border); }
+    .markdown-body table tr:nth-child(2n) { background: var(--c-bg-mute) !important; }
+    .markdown-body table th, .markdown-body table td { background: transparent !important; border: 1px solid var(--c-border); padding: 8px 12px; }
+    .markdown-body table th { background: var(--c-bg-mute) !important; }
+    
+    /* About page */
+    .about-page { padding: 120px 24px 80px; max-width: 900px; margin: 0 auto; }
+    .about-content { background: var(--c-bg-soft); border: 1px solid var(--c-border); border-radius: 12px; padding: 32px; }
+    .about-content .markdown-body { background: transparent; color: var(--c-text); }
+    
+    /* Modal */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
     .modal { background: var(--c-bg); border: 1px solid var(--c-border); border-radius: 16px; width: 100%; max-width: 700px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -57,23 +97,51 @@ const BASE_URL = 'https://moke.furry.luxe/';
     .modal-close svg { width: 20px; height: 20px; }
     .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
     .modal-body .markdown-body { background: transparent; color: var(--c-text); }
-    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; text-align: center; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--c-border); display: flex; justify-content: flex-end; gap: 12px; }
+    .modal-btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+    .modal-btn-primary { background: var(--c-brand); color: white; border: none; }
+    .modal-btn-primary:hover { background: var(--c-brand-light); }
+    
+    /* Footer */
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 16px; text-align: center; background: var(--c-bg); }
     .footer p { font-size: 12px; color: var(--c-text-3); margin: 2px 0; }
     .footer a { color: var(--c-text-3); text-decoration: none; }
     .footer a:hover { color: var(--c-brand); }
+    
     @media (max-width: 768px) {
-      .logo { font-size: 36px; } .subtitle { font-size: 14px; }
-      .search-box { height: 50px; padding: 0 16px; } .search-box input { font-size: 15px; }
-      .modal { max-height: 90vh; margin: 10px; } .modal-header { padding: 16px 20px; } .modal-body { padding: 20px; }
+      .navbar { padding: 0 16px; }
+      .nav-link { padding: 6px 12px; font-size: 13px; }
+      .logo { font-size: 36px; }
+      .subtitle { font-size: 14px; }
+      .search-wrap { flex-direction: row; gap: 8px; }
+      .category-select { width: auto; height: 44px; padding: 0 12px; font-size: 13px; flex-shrink: 0; }
+      .search-box { height: 44px; padding: 0 14px; flex: 1; min-width: 0; }
+      .search-box input { min-width: 0; font-size: 14px; }
+      .search-box svg { width: 18px; height: 18px; }
+      .docs-page, .about-page { padding: 100px 16px 80px; }
+      .docs-content, .about-content { padding: 20px; }
+      .modal { max-height: 90vh; margin: 10px; }
     }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" id="themeToggle" title="切换主题">
-    <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-  </button>
-  <div class="container">
+  <nav class="navbar">
+    <div class="nav-brand">LinktoFur</div>
+    <div class="nav-links">
+      <button class="nav-link active" data-page="home">首页</button>
+      <button class="nav-link" data-page="docs">文档</button>
+      <button class="nav-link" data-page="about">关于我们</button>
+    </div>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" title="切换主题">
+        <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Home Page -->
+  <div class="home-page active" id="homePage">
     <h1 class="logo">Title</h1>
     <p class="subtitle">title2</p>
     <div class="search-wrap">
@@ -88,25 +156,177 @@ const BASE_URL = 'https://moke.furry.luxe/';
       <div class="search-results" id="searchResults"></div>
     </div>
   </div>
+
+  <!-- Docs Page -->
+  <div class="docs-page page" id="docsPage">
+    <div class="docs-nav">
+      <button class="docs-nav-btn active" data-doc="charter">成员公约</button>
+      <button class="docs-nav-btn" data-doc="disclaimer">免责声明</button>
+    </div>
+    <div class="docs-content">
+      <div class="markdown-body" id="docsBody">加载中...</div>
+    </div>
+  </div>
+
+  <!-- About Page -->
+  <div class="about-page page" id="aboutPage">
+    <div class="about-content">
+      <div class="markdown-body" id="aboutBody">加载中...</div>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-header">
-        <h2 class="modal-title" id="modalTitle">学校信息</h2>
+        <h2 class="modal-title" id="modalTitle">信息</h2>
         <button class="modal-close" id="modalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="modal-body"><div class="markdown-body" id="modalBody"></div></div>
     </div>
   </div>
+
+  <!-- Rules Modal (for submit form) -->
+  <div class="modal-overlay" id="rulesModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">提交须知</h2>
+        <button class="modal-close" id="rulesClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div class="modal-body"><div class="markdown-body" id="rulesBody">加载中...</div></div>
+      <div class="modal-footer">
+        <a href="https://docs.qq.com/form/page/DVVZXV09zUUdDUWJs" target="_blank" rel="noopener" class="modal-btn modal-btn-primary">我已阅读，前往填写</a>
+      </div>
+    </div>
+  </div>
+
   <footer class="footer">
     <p>© <span id="footerYear"></span> LinktoFurTeam</p>
     <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">京-114514A</a></p>
   </footer>
+
 
   <script is:inline define:vars={{ BASE_URL }}>
     const API = BASE_URL;
     let articles = [];
     const $ = id => document.getElementById(id);
 
+    // Configure marked to allow HTML tags like <center>
+    marked.setOptions({ breaks: true, gfm: true });
+
+    // Theme
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.documentElement.dataset.theme = theme;
+    $('moonIcon').style.display = theme === 'dark' ? 'block' : 'none';
+    $('sunIcon').style.display = theme === 'light' ? 'block' : 'none';
+
+    $('themeToggle').onclick = () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      $('moonIcon').style.display = next === 'dark' ? 'block' : 'none';
+      $('sunIcon').style.display = next === 'light' ? 'block' : 'none';
+    };
+
+    // Page navigation
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = { home: $('homePage'), docs: $('docsPage'), about: $('aboutPage') };
+    
+    function showPage(pageName) {
+      navLinks.forEach(l => l.classList.toggle('active', l.dataset.page === pageName));
+      Object.entries(pages).forEach(([name, el]) => el.classList.toggle('active', name === pageName));
+      if (pageName === 'docs') loadDoc('charter');
+      if (pageName === 'about') loadAbout();
+    }
+    
+    navLinks.forEach(link => {
+      link.onclick = () => showPage(link.dataset.page);
+    });
+
+    // Docs navigation
+    const docBtns = document.querySelectorAll('.docs-nav-btn');
+    docBtns.forEach(btn => {
+      btn.onclick = () => {
+        docBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadDoc(btn.dataset.doc);
+      };
+    });
+
+    function fixRelativeUrls(html, basePath) {
+      return html
+        .replace(/src="\.\/([^"]+)"/g, 'src="' + API + basePath + '$1"')
+        .replace(/src="\.\.\/([^"]+)"/g, 'src="' + API + '$1"')
+        .replace(/href="\.\/([^"]+)"/g, 'href="' + API + basePath + '$1"')
+        .replace(/href="\.\.\/([^"]+)"/g, 'href="' + API + '$1"');
+    }
+
+    function processHtmlTags(html) {
+      // Process markdown inside <center> tags that weren't rendered
+      return html.replace(/<center>([^<]*(?:\*\*[^*]+\*\*[^<]*)*)<\/center>/gi, (match, inner) => {
+        // Convert **text** to <strong>text</strong>
+        let processed = inner.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        // Convert *text* to <em>text</em>
+        processed = processed.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        return '<center>' + processed + '</center>';
+      });
+    }
+
+    function renderMarkdown(content, basePath) {
+      let html = marked.parse(content);
+      html = processHtmlTags(html);
+      html = fixRelativeUrls(html, basePath);
+      return html;
+    }
+
+    function loadDoc(docType) {
+      const docsBody = $('docsBody');
+      docsBody.innerHTML = '加载中...';
+      docBtns.forEach(b => b.classList.toggle('active', b.dataset.doc === docType));
+      const file = docType === 'charter' ? 'joinus/charter.md' : 'disclaimer.md';
+      const basePath = docType === 'charter' ? 'joinus/' : '';
+      fetch(API + file).then(r => r.text()).then(content => {
+        docsBody.innerHTML = renderMarkdown(removeFrontmatter(content), basePath);
+      }).catch(() => {
+        docsBody.innerHTML = '<p>加载失败</p>';
+      });
+    }
+
+    function loadAbout() {
+      const aboutBody = $('aboutBody');
+      aboutBody.innerHTML = '加载中...';
+      fetch(API + 'aboutus.md').then(r => r.text()).then(content => {
+        aboutBody.innerHTML = renderMarkdown(removeFrontmatter(content), '');
+      }).catch(() => {
+        aboutBody.innerHTML = '<p>加载失败</p>';
+      });
+    }
+
+    function loadRules() {
+      const rulesBody = $('rulesBody');
+      rulesBody.innerHTML = '加载中...';
+      fetch(API + 'joinus/charter.md').then(r => r.text()).then(content => {
+        rulesBody.innerHTML = renderMarkdown(removeFrontmatter(content), 'joinus/');
+      }).catch(() => {
+        rulesBody.innerHTML = '<p>加载失败</p>';
+      });
+    }
+
+    // Handle URL routing
+    function handleRoute() {
+      const path = window.location.pathname;
+      if (path === '/disclaimer' || path === '/disclaimer/') {
+        showPage('docs');
+        setTimeout(() => loadDoc('disclaimer'), 100);
+      } else if (path === '/aboutus' || path === '/aboutus/') {
+        showPage('about');
+      } else if (path === '/docs' || path === '/docs/') {
+        showPage('docs');
+      }
+    }
+    handleRoute();
+
+    // Helpers
     function parseFrontmatter(content) {
       let match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?/);
       if (!match) match = content.match(/^---([^-][\s\S]*?)---\r?\n?/);
@@ -127,19 +347,9 @@ const BASE_URL = 'https://moke.furry.luxe/';
       return match ? match[1].trim() : filename.replace('.md', '');
     }
 
-    const theme = localStorage.getItem('theme') || 'dark';
-    document.documentElement.dataset.theme = theme;
-    $('moonIcon').style.display = theme === 'dark' ? 'block' : 'none';
-    $('sunIcon').style.display = theme === 'light' ? 'block' : 'none';
+    function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
-    $('themeToggle').onclick = () => {
-      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-      document.documentElement.dataset.theme = next;
-      localStorage.setItem('theme', next);
-      $('moonIcon').style.display = next === 'dark' ? 'block' : 'none';
-      $('sunIcon').style.display = next === 'light' ? 'block' : 'none';
-    };
-
+    // Load articles
     fetch(API + 'api.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
       .then(r => r.json()).then(data => {
         const folders = data.folders || [];
@@ -159,6 +369,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
         });
       });
 
+    // Search
     const searchInput = $('searchInput');
     const searchResults = $('searchResults');
     const categorySelect = $('categorySelect');
@@ -179,8 +390,6 @@ const BASE_URL = 'https://moke.furry.luxe/';
       if (!article.path) return false;
       return article.path.startsWith('pages') && !article.path.includes('联合群');
     }
-
-    function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
     function parseSchoolTable(content) {
       const schools = [];
@@ -242,7 +451,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
         buildUnionIndex();
         const results = unionIndex.filter(u => u.org.toLowerCase().includes(lq));
         if (!results.length) {
-          searchResults.innerHTML = '<div class="no-result"><a href="https://docs.qq.com/form/page/DVVZXV09zUUdDUWJs" target="_blank" rel="noopener" style="color:var(--c-brand);text-decoration:none;">没有找到相关联合群，欢迎填写信息表</a></div>';
+          searchResults.innerHTML = '<div class="no-result"><span class="no-result-link" onclick="showRulesModal()">没有找到相关联合群，欢迎填写信息表</span></div>';
         } else {
           searchResults.innerHTML = results.slice(0, 15).map((r, i) => {
             const orgHtml = r.org.replace(new RegExp('(' + escapeRegex(q) + ')', 'gi'), '<mark>$1</mark>');
@@ -255,7 +464,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
         buildSchoolIndex(category);
         const results = schoolIndex.filter(s => s.school.toLowerCase().includes(lq) || s.org.toLowerCase().includes(lq));
         if (!results.length) {
-          searchResults.innerHTML = '<div class="no-result"><a href="https://docs.qq.com/form/page/DVVZXV09zUUdDUWJs" target="_blank" rel="noopener" style="color:var(--c-brand);text-decoration:none;">没有找到相关院校的组织，如你是该院校组织的管理员，欢迎填写信息表</a></div>';
+          searchResults.innerHTML = '<div class="no-result"><span class="no-result-link" onclick="showRulesModal()">没有找到相关院校的组织，如你是该院校组织的管理员，欢迎填写信息表</span></div>';
         } else {
           searchResults.innerHTML = results.slice(0, 15).map((r, i) => {
             const schoolHtml = r.school.replace(new RegExp('(' + escapeRegex(q) + ')', 'gi'), '<mark>$1</mark>');
@@ -269,9 +478,11 @@ const BASE_URL = 'https://moke.furry.luxe/';
       searchResults.classList.add('show');
     }
 
+    // Modals
     const modalOverlay = $('modalOverlay');
     const modalTitle = $('modalTitle');
     const modalBody = $('modalBody');
+    const rulesModal = $('rulesModal');
 
     function showSchoolInfo(info) {
       modalTitle.textContent = info.school;
@@ -283,7 +494,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
 
     function showUnionInfo(info) {
       modalTitle.textContent = info.org;
-      const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, text, url) => {
+      const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
         if (url.startsWith('./')) url = API + url.slice(2);
         else if (url.startsWith('../')) url = API + url.replace(/^\.\.\//, '');
         return '<a href="' + url + '" target="_blank" rel="noopener" style="color:var(--c-brand)">' + text + '</a>';
@@ -293,9 +504,17 @@ const BASE_URL = 'https://moke.furry.luxe/';
       searchResults.classList.remove('show');
     }
 
+    window.showRulesModal = function() {
+      loadRules();
+      rulesModal.classList.add('show');
+      searchResults.classList.remove('show');
+    };
+
     $('modalClose').onclick = () => modalOverlay.classList.remove('show');
+    $('rulesClose').onclick = () => rulesModal.classList.remove('show');
     modalOverlay.onclick = e => { if (e.target === modalOverlay) modalOverlay.classList.remove('show'); };
-    document.onkeydown = e => { if (e.key === 'Escape') modalOverlay.classList.remove('show'); };
+    rulesModal.onclick = e => { if (e.target === rulesModal) rulesModal.classList.remove('show'); };
+    document.onkeydown = e => { if (e.key === 'Escape') { modalOverlay.classList.remove('show'); rulesModal.classList.remove('show'); } };
     $('footerYear').textContent = new Date().getFullYear();
   </script>
 </body>
