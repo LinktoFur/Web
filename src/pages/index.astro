@@ -304,12 +304,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
 
     function loadRules() {
       const rulesBody = $('rulesBody');
-      rulesBody.innerHTML = '加载中...';
-      fetch(API + 'joinus/charter.md').then(r => r.text()).then(content => {
-        rulesBody.innerHTML = renderMarkdown(removeFrontmatter(content), 'joinus/');
-      }).catch(() => {
-        rulesBody.innerHTML = '<p>加载失败</p>';
-      });
+      rulesBody.innerHTML = getJoinRulesHtml();
     }
 
     // Handle URL routing
@@ -442,6 +437,33 @@ const BASE_URL = 'https://moke.furry.luxe/';
         parseUnionTable(unionArticle.content).forEach(u => unionIndex.push(u));
       }
     }
+
+    const joinRulesText = `*原条目：《成员公约》*
+
+一、 本企划仅接受以Furry同好主题相关的组织加入。
+
+二、 高校组织加入本项目并且参与信息登记的条件是：
+1. 有加入本项目的意愿；
+2. 具有高校背景*；
+3. 有明确的负责人代表其组织，并有对Furry一定程度的理解；
+4. 组织成员至少达到3人;
+5. **申请的群聊应遵循法律法规，不得传播违法信息;**
+6. 填写相关信息表，并且留下相关联系方式的人必须在加入高校兽迷联盟的交流群内；
+7. 同意本网站的[免责声明](/disclaimer)；
+8. 您知晓并同意，在本企划任何范围内不得就任何方面歧视、贬低其它院校。
+9. 若加入的高校组织若决定自行退出，需通知相关的志愿者，并且删除相关的现在正在合作的声明，或声明合作已经终止。`;
+
+    function getJoinRulesHtml() {
+      let html = marked.parse(joinRulesText);
+      html = html.replace(/href="\/disclaimer"/g, 'href="javascript:void(0)" onclick="goToDisclaimer()"');
+      return html;
+    }
+
+    window.goToDisclaimer = function() {
+      rulesModal.classList.remove('show');
+      showPage('docs');
+      setTimeout(() => loadDoc('disclaimer'), 100);
+    };
 
     function search(q) {
       const category = categorySelect.value;
