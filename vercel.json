@@ -2,7 +2,6 @@
   "rewrites": [
     { "source": "/disclaimer", "destination": "/" },
     { "source": "/aboutus", "destination": "/" },
-    { "source": "/docs", "destination": "/" },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/docs", "destination": "/" }
   ]
 }
