@@ -49,8 +49,18 @@ const BASE_URL = 'https://moke.furry.luxe/';
     .search-wrap { width: 100%; max-width: 600px; position: relative; display: flex; align-items: center; gap: 12px; }
     .search-box { display: flex; align-items: center; gap: 12px; padding: 0 20px; height: 56px; background: var(--c-bg-soft); border: 1px solid var(--c-border); border-radius: 12px; transition: all 0.2s; flex: 1; }
     .search-box:focus-within { border-color: var(--c-brand); box-shadow: 0 0 0 3px var(--c-highlight-bg); }
-    .category-select { padding: 12px 16px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text); border-radius: 12px; font-size: 14px; cursor: pointer; outline: none; flex-shrink: 0; height: 56px; }
-    .category-select:hover { background: var(--c-bg-mute); }
+    .category-select { padding: 12px 16px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text); border-radius: 12px; font-size: 14px; cursor: pointer; outline: none; flex-shrink: 0; height: 56px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; background-size: 20px; padding-right: 40px; }
+    .category-select:hover { background-color: var(--c-bg-mute); }
+    
+    /* Custom select dropdown */
+    .custom-select-wrapper { position: relative; flex-shrink: 0; }
+    .custom-select { padding: 12px 16px; border: 1px solid var(--c-border); background: var(--c-bg-soft); color: var(--c-text); border-radius: 12px; font-size: 14px; cursor: pointer; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 8px; transition: all 0.2s; }
+    .custom-select:hover { background: var(--c-bg-mute); }
+    .custom-select-dropdown { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--c-bg-soft); border: 1px solid var(--c-border); border-radius: 12px; overflow: hidden; z-index: 101; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .custom-select-dropdown.show { display: block; }
+    .custom-select-option { padding: 12px 16px; cursor: pointer; transition: background 0.15s; }
+    .custom-select-option:hover { background: var(--c-bg-mute); }
+    .custom-select-option.selected { background: var(--c-highlight-bg); color: var(--c-brand); }
     .search-box svg { width: 20px; height: 20px; color: var(--c-text-3); flex-shrink: 0; }
     .search-box input { flex: 1; height: 100%; border: none; background: transparent; font-size: 16px; color: var(--c-text); outline: none; }
     .search-box input::placeholder { color: var(--c-text-3); }
@@ -122,6 +132,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
       .subtitle { font-size: 14px; }
       .search-wrap { flex-direction: row; gap: 8px; }
       .category-select { width: auto; height: 44px; padding: 0 12px; font-size: 13px; flex-shrink: 0; }
+      .custom-select { height: 44px; padding: 0 12px; font-size: 13px; }
       .search-box { height: 44px; padding: 0 14px; flex: 1; min-width: 0; }
       .search-box input { min-width: 0; font-size: 14px; }
       .search-box svg { width: 18px; height: 18px; }
@@ -152,10 +163,16 @@ const BASE_URL = 'https://moke.furry.luxe/';
     <h1 class="logo">搜索院校或地区群</h1>
     <p class="subtitle">🐾🔍️</p>
     <div class="search-wrap">
-      <select id="categorySelect" class="category-select">
-        <option value="school">院校</option>
-        <option value="union">地区联合群</option>
-      </select>
+      <div class="custom-select-wrapper">
+        <div class="custom-select" id="customCategorySelect">
+          <span id="categoryLabel">院校</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+        <div class="custom-select-dropdown" id="categoryDropdown">
+          <div class="custom-select-option selected" data-value="school">院校</div>
+          <div class="custom-select-option" data-value="union">地区联合群</div>
+        </div>
+      </div>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="searchInput" placeholder="输入学校名称..." autocomplete="off">
@@ -412,6 +429,37 @@ const BASE_URL = 'https://moke.furry.luxe/';
     const searchResults = $('searchResults');
     const categorySelect = $('categorySelect');
     let timer;
+    let currentCategory = 'school';
+
+    // Custom select handling
+    const customCategorySelect = $('customCategorySelect');
+    const categoryDropdown = $('categoryDropdown');
+    const categoryLabel = $('categoryLabel');
+    const categoryOptions = categoryDropdown.querySelectorAll('.custom-select-option');
+
+    customCategorySelect.onclick = () => {
+      categoryDropdown.classList.toggle('show');
+    };
+
+    categoryOptions.forEach(option => {
+      option.onclick = () => {
+        const value = option.dataset.value;
+        currentCategory = value;
+        categoryLabel.textContent = option.textContent;
+        categoryOptions.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        categoryDropdown.classList.remove('show');
+        const q = searchInput.value.trim();
+        if (q.length >= 1) search(q);
+      };
+    });
+
+    document.onclick = e => {
+      if (!e.target.closest('.search-wrap') && !e.target.closest('.custom-select-wrapper')) {
+        searchResults.classList.remove('show');
+        categoryDropdown.classList.remove('show');
+      }
+    };
 
     searchInput.oninput = e => {
       clearTimeout(timer);
@@ -420,8 +468,6 @@ const BASE_URL = 'https://moke.furry.luxe/';
       timer = setTimeout(() => search(q), 150);
     };
     searchInput.onfocus = () => { if (searchInput.value.trim().length >= 1) search(searchInput.value.trim()); };
-    categorySelect.onchange = () => { const q = searchInput.value.trim(); if (q.length >= 1) search(q); };
-    document.onclick = e => { if (!e.target.closest('.search-wrap')) searchResults.classList.remove('show'); };
 
     function isSearchable(article, category) {
       if (category === 'union') return article.name === 'unions.md' && article.path === '';
@@ -516,7 +562,7 @@ const BASE_URL = 'https://moke.furry.luxe/';
     };
 
     function search(q) {
-      const category = categorySelect.value;
+      const category = currentCategory;
       const lq = q.toLowerCase();
       
       if (category === 'union') {
