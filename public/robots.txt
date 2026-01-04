@@ -1,0 +1,11 @@
+# robots.txt for LinktoFur
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /server/
+
+# Sitemap
+Sitemap: https://linktofur.net/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

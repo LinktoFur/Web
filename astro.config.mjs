@@ -4,6 +4,8 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
   output: 'static',
+  site: 'https://linktofur.net',
+  compressHTML: true,
   vite: {
     build: {
       minify: 'esbuild',
@@ -12,9 +14,6 @@ export default defineConfig({
           manualChunks: undefined,
         },
       },
-    },
-    esbuild: {
-      drop: ['console', 'debugger'],
     },
   },
 });
