@@ -5,6 +5,24 @@ const $ = id => document.getElementById(id);
 
 marked.setOptions({ breaks: true, gfm: true });
 
+// 加载公告
+(async () => {
+  try {
+    const response = await fetch(API + 'announce.md');
+    if (response.ok) {
+      const content = await response.text();
+      const announcementWrap = $('announcementWrap');
+      const announcementContent = $('announcementContent');
+      if (content.trim()) {
+        announcementContent.innerHTML = marked.parse(content);
+        announcementWrap.style.display = 'block';
+      }
+    }
+  } catch (e) {
+    // 公告加载失败，不显示
+  }
+})();
+
 (async () => {
   try {
     const response = await fetch(API + 'hide.txt');
@@ -100,7 +118,7 @@ function loadAbout() {
       { name: '蛇蛇', title: '预备志愿者', avatar: 'snake.png', link: 'https://space.bilibili.com/422589383' },
     ];
     
-    const cardsHtml = '<div style="display:flex;gap:20px;justify-content:center;margin:20px 0;overflow-x:auto" class="contributor-cards-container">' + 
+    const cardsHtml = '<div style="display:flex;gap:20px;justify-content:center;margin:20px 0;flex-wrap:wrap" class="contributor-cards-container">' + 
       contributors.map(c => `
         <a href="${c.link}" target="_blank" rel="noopener noreferrer" class="contributor-card">
           <div class="contributor-card-inner">
