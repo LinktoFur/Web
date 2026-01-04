@@ -517,7 +517,20 @@ const BASE_URL = 'https://moke.furry.luxe/';
     function showSchoolInfo(info) {
       modalTitle.textContent = info.school;
       const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" style="color:var(--c-brand)">$1</a>');
-      modalBody.innerHTML = '<div style="line-height:2"><p><strong>院校：</strong>' + info.school + '</p><p><strong>组织：</strong>' + info.org + '</p><p><strong>联系方式：</strong>' + contactHtml + '</p><p><strong>地区：</strong>' + info.region + '</p></div>';
+      
+      // Check if first line contains #hide
+      const firstLine = info.article.content.split('\n')[0].trim();
+      const shouldHideContact = firstLine.includes('#hide');
+      
+      let html = '<div style="line-height:2"><p><strong>院校：</strong>' + info.school + '</p><p><strong>组织：</strong>' + info.org + '</p>';
+      if (shouldHideContact) {
+        html += '<p><strong>联系方式：</strong>暂无</p>';
+      } else {
+        html += '<p><strong>联系方式：</strong>' + contactHtml + '</p>';
+      }
+      html += '<p><strong>地区：</strong>' + info.region + '</p></div>';
+      
+      modalBody.innerHTML = html;
       modalOverlay.classList.add('show');
       searchResults.classList.remove('show');
     }
