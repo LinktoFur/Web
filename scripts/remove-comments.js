@@ -6,10 +6,65 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(__dirname, '../dist');
 
 function removeCommentsFromJS(content) {
-  return content
-    .replace(/\/\*[\s\S]*?\*\//g, '')
-    .replace(/\/\/.*$/gm, '')
-    .replace(/\n\s*\n/g, '\n');
+  let result = '';
+  let inString = false;
+  let stringChar = '';
+  let inRegex = false;
+  let i = 0;
+
+  while (i < content.length) {
+    const char = content[i];
+    const nextChar = content[i + 1];
+
+    // Handle strings
+    if ((char === '"' || char === "'" || char === '`') && (i === 0 || content[i - 1] !== '\\')) {
+      if (!inString) {
+        inString = true;
+        stringChar = char;
+      } else if (char === stringChar) {
+        inString = false;
+      }
+      result += char;
+      i++;
+      continue;
+    }
+
+    // Skip if inside string
+    if (inString) {
+      result += char;
+      i++;
+      continue;
+    }
+
+    // Handle block comments
+    if (char === '/' && nextChar === '*') {
+      let j = i + 2;
+      while (j < content.length - 1) {
+        if (content[j] === '*' && content[j + 1] === '/') {
+          i = j + 2;
+          break;
+        }
+        j++;
+      }
+      if (j >= content.length - 1) i = content.length;
+      continue;
+    }
+
+    // Handle line comments
+    if (char === '/' && nextChar === '/') {
+      let j = i + 2;
+      while (j < content.length && content[j] !== '\n') {
+        j++;
+      }
+      i = j;
+      continue;
+    }
+
+    result += char;
+    i++;
+  }
+
+  return result.replace(/\n\s*\n/g, '\n');
 }
 
 function processFile(filePath) {
