@@ -375,7 +375,16 @@ const rulesModal = $('rulesModal');
 
 function showSchoolInfo(info) {
   modalTitle.textContent = info.school;
-  const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:var(--c-brand)">$1</a>');
+  const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+    if (url.startsWith('./')) {
+      url = API + info.article.path + '/' + url.slice(2);
+    } else if (url.startsWith('../')) {
+      const pathParts = info.article.path.split('/');
+      pathParts.pop();
+      url = API + pathParts.join('/') + '/' + url.slice(3);
+    }
+    return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" style="color:var(--c-brand)">' + text + '</a>';
+  });
   
   const firstLine = info.article.content.split('\n')[0].trim();
   const shouldHideContact = hideAllContacts || firstLine.includes('#hide');
@@ -396,8 +405,11 @@ function showSchoolInfo(info) {
 function showUnionInfo(info) {
   modalTitle.textContent = info.org;
   const contactHtml = info.contact.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
-    if (url.startsWith('./')) url = API + url.slice(2);
-    else if (url.startsWith('../')) url = API + url.replace(/^\.\.\//, '');
+    if (url.startsWith('./')) {
+      url = API + url.slice(2);
+    } else if (url.startsWith('../')) {
+      url = API + url.slice(3);
+    }
     return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" style="color:var(--c-brand)">' + text + '</a>';
   });
   
