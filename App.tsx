@@ -438,6 +438,11 @@ function App() {
             rel="noreferrer"
             className="hover:text-gray-600 dark:hover:text-gray-300"
           >
+            <img
+              src="https://beian.miit.gov.cn/favicon.ico"
+              alt="ICP"
+              className="mr-1 h-4 w-4"
+            />
             粤ICP备2026000263号
           </a>
 
