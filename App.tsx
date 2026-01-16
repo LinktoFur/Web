@@ -434,9 +434,9 @@ function App() {
           {/* ICP备案 */}
           <a
             href="https://beian.miit.gov.cn/"
-            target="_blank"
             rel="noreferrer"
-            className="hover:text-gray-600 dark:hover:text-gray-300"
+            target="_blank"
+            className="flex items-center hover:text-gray-600 dark:hover:text-gray-300"
           >
             <img
               src="https://beian.miit.gov.cn/favicon.ico"
@@ -449,7 +449,7 @@ function App() {
           {/* 分隔符 */}
           <span>•</span>
 
-          {/* 公网安备 (新增部分) */}
+          {/* 公网安备 */}
           <a
             href="https://beian.mps.gov.cn/#/query/webSearch?code=44011102484588"
             rel="noreferrer"
