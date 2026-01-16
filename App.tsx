@@ -240,7 +240,7 @@ function App() {
             <div className="flex flex-col items-center">
               <div className="mb-8 text-center">
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
-                  高校兽迷同好汇
+                  搜索院校或地区联合群
                 </h1>
                 <p className="text-lg text-gray-500 dark:text-gray-400">
                   连接全国高校兽迷同好，搜索你的院校或地区联合群
