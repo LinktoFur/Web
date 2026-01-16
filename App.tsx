@@ -243,7 +243,7 @@ function App() {
                   搜索院校或地区联合群
                 </h1>
                 <p className="text-lg text-gray-500 dark:text-gray-400">
-                  连接全国高校兽迷同好，搜索你的院校或地区联合群
+                  兽迷?在我高学历?这比你想的更有可能
                 </p>
               </div>
 
@@ -439,7 +439,7 @@ function App() {
             className="flex items-center hover:text-gray-600 dark:hover:text-gray-300"
           >
             <img
-              src="https://beian.miit.gov.cn/favicon.ico"
+              src="https://moke.furry.luxe/icp_icon.png"
               alt="ICP"
               className="mr-1 h-4 w-4"
             />
