@@ -243,7 +243,7 @@ function App() {
                   搜索院校或地区联合群
                 </h1>
                 <p className="text-lg text-gray-500 dark:text-gray-400">
-                  兽迷?在我高学历?这比你想的更有可能
+                  兽迷?在我高校里?这比你想的更有可能
                 </p>
               </div>
 
