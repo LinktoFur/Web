@@ -199,8 +199,8 @@ function App() {
                 className={`
                             relative px-3 py-1.5 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition-all duration-300
                             ${activePage === item.id
-                  ? 'text-brand-600 dark:text-brand-300 bg-white dark:bg-zinc-700 shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-zinc-700/50'}
+                    ? 'text-brand-600 dark:text-brand-300 bg-white dark:bg-zinc-700 shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-zinc-700/50'}
                         `}
               >
                 <item.icon size={16} className="hidden sm:block" />
@@ -257,12 +257,12 @@ function App() {
                       className="h-14 px-3 sm:px-5 flex items-center gap-1 sm:gap-2 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-zinc-700/50 rounded-l-2xl transition-colors shrink-0 outline-none"
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                                    <span className="flex items-center gap-2">
-                                        {searchCategory === 'school' ? <Building2 size={18} /> : <Users size={18} />}
-                                      <span className="whitespace-nowrap">
-                                            {searchCategory === 'school' ? '院校' : '联合群'}
-                                        </span>
-                                    </span>
+                      <span className="flex items-center gap-2">
+                        {searchCategory === 'school' ? <Building2 size={18} /> : <Users size={18} />}
+                        <span className="whitespace-nowrap">
+                          {searchCategory === 'school' ? '院校' : '联合群'}
+                        </span>
+                      </span>
                       <ChevronDown size={14} className={`transition-transform duration-200 ml-1 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
 
@@ -356,6 +356,7 @@ function App() {
                   <Markdown
                     content={announcement}
                     className="text-sm [&_h1]:text-xl [&_h1]:mb-3 [&_ol]:my-1"
+                    onOpenRules={() => setRulesModalOpen(true)}
                   />
                 </div>
               )}
@@ -370,11 +371,10 @@ function App() {
                   <button
                     key={type}
                     onClick={() => setActiveDoc(type)}
-                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-all duration-300 ${
-                      activeDoc === type
-                        ? 'text-brand-600 dark:text-brand-400 border-brand-500 bg-brand-50/50 dark:bg-brand-900/10 rounded-t-lg'
-                        : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-zinc-600'
-                    }`}
+                    className={`px-4 py-3 text-sm font-medium border-b-2 transition-all duration-300 ${activeDoc === type
+                      ? 'text-brand-600 dark:text-brand-400 border-brand-500 bg-brand-50/50 dark:bg-brand-900/10 rounded-t-lg'
+                      : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-zinc-600'
+                      }`}
                   >
                     {type === 'charter' ? '成员公约' : '免责声明'}
                   </button>
@@ -386,6 +386,7 @@ function App() {
                   content={getDocContent(activeDoc)}
                   basePath={activeDoc === 'charter' ? 'joinus/' : ''}
                   onInternalNav={handleInternalNav}
+                  onOpenRules={() => setRulesModalOpen(true)}
                 />
               </div>
             </div>
@@ -402,9 +403,9 @@ function App() {
                 if (parts.length > 1) {
                   return (
                     <>
-                      <Markdown content={parts[0]} />
+                      <Markdown content={parts[0]} onOpenRules={() => setRulesModalOpen(true)} />
                       <Contributors />
-                      <Markdown content={parts[1]} />
+                      <Markdown content={parts[1]} onOpenRules={() => setRulesModalOpen(true)} />
                     </>
                   );
                 }
@@ -412,7 +413,7 @@ function App() {
                 // Fallback: just render content and put contributors at the bottom if marker is missing
                 return (
                   <>
-                    <Markdown content={content} />
+                    <Markdown content={content} onOpenRules={() => setRulesModalOpen(true)} />
                     <div className="mt-8 border-t border-gray-200 dark:border-zinc-700 pt-8">
                       <h3 className="text-center text-xl font-bold mb-6">LinktoFur 团队</h3>
                       <Contributors />
@@ -439,7 +440,7 @@ function App() {
             className="flex items-center hover:text-gray-600 dark:hover:text-gray-300"
           >
             <img
-              src="https://moke.furry.luxe/icp_icon.png"
+              src="icp_icon.png"
               alt="ICP"
               className="mr-1 h-4 w-4"
             />
@@ -457,7 +458,7 @@ function App() {
             className="flex items-center hover:text-gray-600 dark:hover:text-gray-300"
           >
             <img
-              src="https://moke.furry.luxe/beian.mps.gov.cn_icon.png"
+              src="beian.mps.gov.cn_icon.png"
               alt="公安备案图标"
               className="mr-1 h-4 w-4"
             />
@@ -483,8 +484,8 @@ function App() {
                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
                   <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">所属地区:</span>
                   <span>
-                                {(selectedItem.data as SchoolInfo).region}
-                            </span>
+                    {(selectedItem.data as SchoolInfo).region}
+                  </span>
                 </div>
               </>
             ) : (
@@ -499,7 +500,7 @@ function App() {
               {(hideAllContacts || (selectedItem.data as any).article?.content?.includes('#hide')) ? (
                 <p className="text-gray-500 italic">暂无联系方式</p>
               ) : (
-                <Markdown content={(selectedItem.data as any).contact} className="prose-p:m-0" />
+                <Markdown content={(selectedItem.data as any).contact} className="prose-p:m-0" onOpenRules={() => setRulesModalOpen(true)} />
               )}
             </div>
           </div>

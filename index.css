@@ -1,25 +1,33 @@
+@import url('/fonts/oppo-sans/result.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+
   /* Custom scrollbar for webkit */
   ::-webkit-scrollbar {
     width: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+
   ::-webkit-scrollbar-thumb {
     background: #d1d5db;
     border-radius: 4px;
   }
+
   .dark ::-webkit-scrollbar-thumb {
     background: #4b5563;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: #9ca3af;
   }
+
   .dark ::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
   }
@@ -32,14 +40,16 @@
 }
 
 @layer components {
+
   /* Markdown Styles */
   .prose {
     max-width: 100%;
   }
+
   .prose a {
     @apply text-brand-600 no-underline hover:underline dark:text-brand-400;
   }
-  
+
   /* Table Styling Fixes */
   .prose table {
     width: 100%;
@@ -47,27 +57,35 @@
     margin: 1rem 0;
     table-layout: auto;
   }
-  .prose th, .prose td {
+
+  .prose th,
+  .prose td {
     border: 1px solid #e5e7eb;
     padding: 0.75rem;
     text-align: left;
     color: inherit;
   }
-  .dark .prose th, .dark .prose td {
+
+  .dark .prose th,
+  .dark .prose td {
     border-color: #3f3f46;
   }
+
   .prose th {
     background-color: #f3f4f6;
     font-weight: 600;
     color: #111827;
   }
+
   .dark .prose th {
     background-color: #27272a;
     color: #f3f4f6;
   }
+
   .prose tr:nth-child(even) {
     background-color: #f9fafb;
   }
+
   .dark .prose tr:nth-child(even) {
     background-color: rgba(39, 39, 42, 0.5);
   }
