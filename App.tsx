@@ -1,16 +1,36 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Search, Moon, Sun, ChevronDown,
   Book, Home, Info, Building2, Users, ExternalLink
 } from './components/Icons';
 import Markdown from './components/Markdown';
 import Modal from './components/Modal';
-import { fetchGlobalData, getAssetUrl, processMarkdownContent } from './services/api';
-import { SchoolInfo, UnionInfo, Article, SearchCategory } from './types';
+import { fetchInitData, searchItems, fetchItemDetail, getAssetUrl, processMarkdownContent } from './services/api';
+import { SchoolSearchResult, UnionSearchResult, SchoolInfo, UnionInfo, Article, SearchCategory } from './types';
 
 // Page types for simple routing
 type Page = 'home' | 'docs' | 'about';
 type DocType = 'charter' | 'disclaimer';
+
+// Skeleton shimmer component for search loading
+const SearchSkeleton = () => (
+  <div className="animate-pulse">
+    {[1, 2, 3].map(i => (
+      <div key={i} className="p-4 border-b border-gray-50 dark:border-zinc-700/50 last:border-0">
+        <div className="h-4 bg-gray-200 dark:bg-zinc-700 rounded-lg w-3/5 mb-2.5" />
+        <div className="h-3 bg-gray-100 dark:bg-zinc-700/60 rounded-lg w-2/5" />
+      </div>
+    ))}
+  </div>
+);
+
+// Spinner component
+const Spinner = ({ size = 16, className = '' }: { size?: number; className?: string }) => (
+  <div
+    className={`border-2 border-brand-500 border-t-transparent rounded-full animate-spin ${className}`}
+    style={{ width: size, height: size }}
+  />
+);
 
 function App() {
   // -- State --
@@ -22,29 +42,42 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [announcement, setAnnouncement] = useState('');
   const [hideAllContacts, setHideAllContacts] = useState(false);
-  const [schools, setSchools] = useState<SchoolInfo[]>([]);
-  const [unions, setUnions] = useState<UnionInfo[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
 
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCategory, setSearchCategory] = useState<SearchCategory>('school');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<(SchoolSearchResult | UnionSearchResult)[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchTotal, setSearchTotal] = useState(0);
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<{ type: 'school' | 'union', data: any } | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{ type: 'school' | 'union', data: SchoolSearchResult | UnionSearchResult } | null>(null);
+  const [detailData, setDetailData] = useState<SchoolInfo | UnionInfo | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
   const [rulesModalOpen, setRulesModalOpen] = useState(false);
+  const [rateLimitMsg, setRateLimitMsg] = useState('');
+
+  // Refs
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rateLimitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestQueryRef = useRef('');
+
+  // Show rate limit warning toast
+  const showRateLimitWarning = useCallback(() => {
+    setRateLimitMsg('请求过于频繁，请稍后再试');
+    if (rateLimitTimerRef.current) clearTimeout(rateLimitTimerRef.current);
+    rateLimitTimerRef.current = setTimeout(() => setRateLimitMsg(''), 5000);
+  }, []);
 
   // -- Effects --
 
   // Theme Init
   useEffect(() => {
-    // Check local storage or default to dark
     const saved = localStorage.getItem('theme') || 'dark';
     setTheme(saved as any);
-
-    // Force sync DOM with state
     if (saved === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -56,8 +89,6 @@ function App() {
     setTheme(prev => {
       const next = prev === 'dark' ? 'light' : 'dark';
       localStorage.setItem('theme', next);
-
-      // Explicitly set class to ensure sync
       if (next === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
@@ -67,44 +98,111 @@ function App() {
     });
   };
 
-  // Data Fetching
+  // Data Fetching (only init data — no schools/unions)
   useEffect(() => {
-    fetchGlobalData().then(data => {
+    let ignore = false;
+    fetchInitData().then(data => {
+      if (ignore) return;
       setAnnouncement(data.announcement);
       setHideAllContacts(data.hideAllContacts);
-      setSchools(data.schools);
-      setUnions(data.unions);
       setArticles(data.articles);
       setLoading(false);
     }).catch(err => {
+      if (ignore) return;
       console.error(err);
       setLoading(false);
     });
+    return () => { ignore = true; };
   }, []);
 
-  // -- Search Logic --
-
-  const filteredResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const q = searchQuery.toLowerCase();
-
-    if (searchCategory === 'school') {
-      return schools.filter(s =>
-        (s.school && s.school.toLowerCase().includes(q)) ||
-        (s.org && s.org.toLowerCase().includes(q))
-      ).slice(0, 20); // Limit results
-    } else {
-      return unions.filter(u =>
-        (u.org && u.org.toLowerCase().includes(q))
-      ).slice(0, 20);
+  // -- Debounced Search --
+  const doSearch = useCallback(async (query: string, category: SearchCategory) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      setSearchTotal(0);
+      return;
     }
-  }, [searchQuery, searchCategory, schools, unions]);
 
-  const handleResultClick = (item: any) => {
+    latestQueryRef.current = query;
+    setSearchLoading(true);
+
+    try {
+      const res = await searchItems(query, category);
+      // Only update if this is still the latest query
+      if (latestQueryRef.current === query) {
+        setSearchResults(res.results);
+        setSearchTotal(res.total);
+        setSearchLoading(false);
+      }
+    } catch (err: any) {
+      if (latestQueryRef.current === query) {
+        setSearchLoading(false);
+        if (err.message === 'RATE_LIMITED') {
+          setSearchResults([]);
+          showRateLimitWarning();
+        }
+      }
+    }
+  }, [showRateLimitWarning]);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+    }
+
+    if (!value.trim()) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      setSearchTotal(0);
+      return;
+    }
+
+    // Show loading immediately for responsiveness
+    setSearchLoading(true);
+
+    searchTimerRef.current = setTimeout(() => {
+      doSearch(value, searchCategory);
+    }, 200);
+  }, [searchCategory, doSearch]);
+
+  // Re-search when category changes
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+      setSearchLoading(true);
+      searchTimerRef.current = setTimeout(() => {
+        doSearch(searchQuery, searchCategory);
+      }, 200);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchCategory]);
+
+  // -- Detail Loading --
+  const handleResultClick = async (item: SchoolSearchResult | UnionSearchResult) => {
     if (!item) return;
     setSelectedItem({ type: searchCategory, data: item });
+    setDetailData(null);
+    setDetailLoading(true);
     setModalOpen(true);
-    setSearchQuery(''); // Optional: clear search on select
+
+    try {
+      const schoolName = 'school' in item ? item.school : '';
+      const orgName = item.org;
+      const res = await fetchItemDetail(searchCategory, schoolName, orgName);
+      if (res.found && res.data) {
+        setDetailData(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to load detail', err);
+      if ((err as any)?.message === 'RATE_LIMITED') {
+        showRateLimitWarning();
+      }
+    } finally {
+      setDetailLoading(false);
+    }
   };
 
   // -- Content Logic --
@@ -112,12 +210,17 @@ function App() {
   const renderHighlight = (text: string, query: string) => {
     if (!text) return '';
     if (!query) return text;
-    const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, i) =>
-      part.toLowerCase() === query.toLowerCase() ?
-        <mark key={i} className="bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded px-0.5">{part}</mark> :
-        part
-    );
+    try {
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
+      return parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ?
+          <mark key={i} className="bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded px-0.5">{part}</mark> :
+          part
+      );
+    } catch {
+      return text;
+    }
   };
 
   const getDocContent = (type: DocType) => {
@@ -130,7 +233,6 @@ function App() {
   const getAboutContent = () => {
     const article = articles.find(a => a.name === 'aboutus.md');
     if (!article) return 'Loading...';
-    // Return raw content, let the render logic handle the split
     return processMarkdownContent(article.content, '');
   };
 
@@ -153,7 +255,6 @@ function App() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 my-6">
         {list.map((c, i) => (
           <a key={i} href={c.link} target="_blank" rel="noreferrer" className="block group">
-            {/* Updated: Removed translate/scale/shadow, added ring outline */}
             <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-3 md:p-4 flex flex-col items-center transition-all hover:ring-2 hover:ring-brand-500 hover:border-transparent duration-300 h-full">
               <img
                 src={getAssetUrl(c.avatar)}
@@ -172,6 +273,16 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-brand-500/30 selection:text-brand-800 dark:selection:text-brand-200">
 
+      {/* Rate Limit Toast */}
+      {rateLimitMsg && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-down">
+          <div className="bg-red-500/90 backdrop-blur-sm text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 text-sm font-medium">
+            <span>⚠️ {rateLimitMsg}</span>
+            <button onClick={() => setRateLimitMsg('')} className="text-white/70 hover:text-white ml-2">×</button>
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 h-16 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 z-40 px-4 md:px-6 flex items-center justify-between transition-colors duration-300">
 
@@ -185,7 +296,7 @@ function App() {
           </div>
         </div>
 
-        {/* Center: Nav Buttons (Absolute Positioning) */}
+        {/* Center: Nav Buttons */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
           <div className="flex items-center gap-1 md:gap-2 bg-gray-100 dark:bg-zinc-800/50 p-1 rounded-full border border-gray-200 dark:border-zinc-700 shadow-sm">
             {[
@@ -292,13 +403,18 @@ function App() {
                       className="flex-1 h-full bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 min-w-0"
                       placeholder={searchCategory === 'school' ? '输入学校名称...' : '输入地区名称...'}
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => handleSearchChange(e.target.value)}
                       autoComplete="off"
                     />
+                    {/* Spinner or Clear button */}
                     {searchQuery && (
-                      <button onClick={() => setSearchQuery('')} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0 ml-2">
-                        <div className="bg-gray-100 dark:bg-zinc-700 rounded-full p-1"><span className="sr-only">Clear</span>×</div>
-                      </button>
+                      searchLoading ? (
+                        <Spinner size={16} className="shrink-0 ml-2" />
+                      ) : (
+                        <button onClick={() => { setSearchQuery(''); setSearchResults([]); setSearchTotal(0); }} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shrink-0 ml-2">
+                          <div className="bg-gray-100 dark:bg-zinc-700 rounded-full p-1"><span className="sr-only">Clear</span>×</div>
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
@@ -306,9 +422,16 @@ function App() {
                 {/* Results Dropdown */}
                 {searchQuery && (
                   <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-zinc-800 rounded-2xl border border-gray-100 dark:border-zinc-700 shadow-xl max-h-[60vh] overflow-y-auto overscroll-contain custom-scrollbar animate-slide-down origin-top z-50">
-                    {filteredResults.length > 0 ? (
-                      <div>
-                        {filteredResults.map((item: any, i) => (
+                    {searchLoading && searchResults.length === 0 ? (
+                      /* Skeleton shimmer when no previous results */
+                      <SearchSkeleton />
+                    ) : searchResults.length > 0 ? (
+                      <div className={searchLoading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+                        {/* Result count header */}
+                        <div className="px-4 py-2 border-b border-gray-100 dark:border-zinc-700/50 text-xs text-gray-400">
+                          找到 {searchTotal} 个结果
+                        </div>
+                        {searchResults.map((item: any, i) => (
                           <div
                             key={i}
                             onClick={() => handleResultClick(item)}
@@ -316,19 +439,19 @@ function App() {
                           >
                             <div className="font-semibold text-gray-900 dark:text-white text-base">
                               {searchCategory === 'school'
-                                ? renderHighlight(item.school, searchQuery)
-                                : renderHighlight(item.org, searchQuery)
+                                ? renderHighlight((item as SchoolSearchResult).school, searchQuery)
+                                : renderHighlight((item as UnionSearchResult).org, searchQuery)
                               }
                             </div>
                             <div className="text-sm text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2">
                               {searchCategory === 'school' ? (
                                 <>
-                                  <span className="font-medium">{renderHighlight(item.org, searchQuery)}</span>
+                                  <span className="font-medium">{renderHighlight((item as SchoolSearchResult).org, searchQuery)}</span>
                                   <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
-                                  <span>{item.region}</span>
+                                  <span>{(item as SchoolSearchResult).region}</span>
                                 </>
                               ) : (
-                                <span>{item.intro || '地区联合群'}</span>
+                                <span>{(item as UnionSearchResult).intro || '地区联合群'}</span>
                               )}
                             </div>
                           </div>
@@ -380,7 +503,6 @@ function App() {
                   </button>
                 ))}
               </div>
-              {/* Inner content transition */}
               <div key={activeDoc} className="bg-white dark:bg-zinc-800 p-8 rounded-2xl border border-gray-200 dark:border-zinc-700 shadow-sm animate-zoom-in">
                 <Markdown
                   content={getDocContent(activeDoc)}
@@ -399,7 +521,6 @@ function App() {
                 const content = getAboutContent();
                 const parts = content.split('*四个flex*');
 
-                // If we find the marker, inject the Contributors component in between
                 if (parts.length > 1) {
                   return (
                     <>
@@ -410,7 +531,6 @@ function App() {
                   );
                 }
 
-                // Fallback: just render content and put contributors at the bottom if marker is missing
                 return (
                   <>
                     <Markdown content={content} onOpenRules={() => setRulesModalOpen(true)} />
@@ -425,53 +545,37 @@ function App() {
           )}
         </div>
 
-        {/* Footer - Moved out of page logic to ensure it shows on all pages */}
+        {/* Footer */}
         <div className="mt-12 flex flex-wrap justify-center gap-4 text-sm text-gray-400">
           <span>© {new Date().getFullYear()} LinktoFur</span>
-
-          {/* 分隔符 */}
           <span>•</span>
-
-          {/* ICP备案 */}
           <a
             href="https://beian.miit.gov.cn/"
             rel="noreferrer"
             target="_blank"
             className="flex items-center hover:text-gray-600 dark:hover:text-gray-300"
           >
-            <img
-              src="icp_icon.png"
-              alt="ICP"
-              className="mr-1 h-4 w-4"
-            />
+            <img src="icp_icon.png" alt="ICP" className="mr-1 h-4 w-4" />
             粤ICP备2026000263号
           </a>
-
-          {/* 分隔符 */}
           <span>•</span>
-
-          {/* 公网安备 */}
           <a
             href="https://beian.mps.gov.cn/#/query/webSearch?code=44011102484588"
             rel="noreferrer"
             target="_blank"
             className="flex items-center hover:text-gray-600 dark:hover:text-gray-300"
           >
-            <img
-              src="beian.mps.gov.cn_icon.png"
-              alt="公安备案图标"
-              className="mr-1 h-4 w-4"
-            />
+            <img src="beian.mps.gov.cn_icon.png" alt="公安备案图标" className="mr-1 h-4 w-4" />
             粤公网安备44011102484588号
           </a>
         </div>
       </main>
 
-      {/* Details Modal */}
+      {/* Details Modal — loads contact info on demand */}
       <Modal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        title={selectedItem?.data ? (selectedItem.type === 'school' ? (selectedItem.data as SchoolInfo).school : (selectedItem.data as UnionInfo).org) : ''}
+        onClose={() => { setModalOpen(false); setDetailData(null); }}
+        title={selectedItem?.data ? (selectedItem.type === 'school' ? (selectedItem.data as SchoolSearchResult).school : (selectedItem.data as UnionSearchResult).org) : ''}
       >
         {selectedItem?.data && (
           <div className="space-y-4 text-gray-700 dark:text-gray-300">
@@ -479,28 +583,36 @@ function App() {
               <>
                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
                   <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">组织名称:</span>
-                  <span>{(selectedItem.data as SchoolInfo).org}</span>
+                  <span>{(selectedItem.data as SchoolSearchResult).org}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
                   <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">所属地区:</span>
-                  <span>
-                    {(selectedItem.data as SchoolInfo).region}
-                  </span>
+                  <span>{(selectedItem.data as SchoolSearchResult).region}</span>
                 </div>
               </>
             ) : (
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
                 <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">简介:</span>
-                <span>{(selectedItem.data as UnionInfo).intro || '暂无简介'}</span>
+                <span>{(selectedItem.data as UnionSearchResult).intro || '暂无简介'}</span>
               </div>
             )}
 
+            {/* Contact info section — loaded on demand */}
             <div className="pt-4 border-t border-gray-100 dark:border-zinc-700">
               <span className="block font-semibold mb-2 text-gray-900 dark:text-white">联系方式:</span>
-              {(hideAllContacts || (selectedItem.data as any).article?.content?.includes('#hide')) ? (
-                <p className="text-gray-500 italic">暂无联系方式</p>
+              {detailLoading ? (
+                <div className="flex items-center gap-3 py-4">
+                  <Spinner size={18} />
+                  <span className="text-gray-400 text-sm">加载联系方式中...</span>
+                </div>
+              ) : detailData ? (
+                hideAllContacts ? (
+                  <p className="text-gray-500 italic">暂无联系方式</p>
+                ) : (
+                  <Markdown content={(detailData as any).contact || '暂无联系方式'} className="prose-p:m-0" onOpenRules={() => setRulesModalOpen(true)} />
+                )
               ) : (
-                <Markdown content={(selectedItem.data as any).contact} className="prose-p:m-0" onOpenRules={() => setRulesModalOpen(true)} />
+                <p className="text-gray-500 italic">无法加载联系方式</p>
               )}
             </div>
           </div>
