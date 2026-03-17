@@ -289,10 +289,13 @@ function App() {
         {/* Left: Logo */}
         <div className="flex-1 flex justify-start">
           <div
-            className="hidden md:block text-xl font-bold bg-gradient-to-r from-brand-600 to-emerald-500 bg-clip-text text-transparent cursor-pointer hover:opacity-80 transition-opacity"
+            className="hidden md:flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => setActivePage('home')}
           >
-            LinktoFur
+            <img src="logo.png" alt="Logo" className="h-8 w-auto" />
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
+              LinktoFur
+            </span>
           </div>
         </div>
 
