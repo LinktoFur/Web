@@ -215,7 +215,7 @@ function App() {
       const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
       return parts.map((part, i) =>
         part.toLowerCase() === query.toLowerCase() ?
-          <mark key={i} className="bg-brand-500/20 text-brand-600 dark:text-brand-400 rounded px-0.5">{part}</mark> :
+          <mark key={i} className="bg-transparent text-brand-400 dark:text-brand-500 font-semibold">{part}</mark> :
           part
       );
     } catch {
@@ -255,13 +255,13 @@ function App() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 my-6">
         {list.map((c, i) => (
           <a key={i} href={c.link} target="_blank" rel="noreferrer" className="block group">
-            <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-xl p-3 md:p-4 flex flex-col items-center transition-all hover:ring-2 hover:ring-brand-500 hover:border-transparent duration-300 h-full">
+            <div className="bg-white dark:bg-zinc-800 border border-gray-100 dark:border-white/5 shadow-diffuse-sm-light dark:shadow-warm-sm rounded-xl p-3 md:p-4 flex flex-col items-center transition-all hover:ring-1 hover:ring-brand-400/50 hover:shadow-diffuse-light dark:hover:shadow-warm duration-500 h-full">
               <img
                 src={getAssetUrl(c.avatar)}
                 alt={c.name}
                 className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover mb-2 md:mb-3 border-2 border-gray-100 dark:border-zinc-600 group-hover:border-brand-400 transition-colors"
               />
-              <h4 className="font-semibold text-gray-900 dark:text-white text-sm md:text-base">{c.name}</h4>
+              <h4 className="font-medium text-gray-900 dark:text-white text-sm md:text-base">{c.name}</h4>
               <p className="text-xs text-gray-500 dark:text-gray-400 text-center">{c.title}</p>
             </div>
           </a>
@@ -293,7 +293,7 @@ function App() {
             onClick={() => setActivePage('home')}
           >
             <img src="logo.png" alt="Logo" className="h-8 w-auto" />
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
+            <span className="text-xl font-medium text-gray-900 dark:text-white">
               LinktoFur
             </span>
           </div>
@@ -301,7 +301,7 @@ function App() {
 
         {/* Center: Nav Buttons */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          <div className="flex items-center gap-1 md:gap-2 bg-gray-100 dark:bg-zinc-800/50 p-1 rounded-full border border-gray-200 dark:border-zinc-700 shadow-sm">
+          <div className="flex items-center gap-1 md:gap-2 bg-white dark:bg-zinc-800/50 p-1 rounded-full border border-gray-100 dark:border-white/5 shadow-diffuse-sm-light dark:shadow-warm-sm">
             {[
               { id: 'home', label: '首页', icon: Home },
               { id: 'docs', label: '文档', icon: Book },
@@ -347,13 +347,13 @@ function App() {
         )}
 
         {/* PAGE CONTENT WRAPPER */}
-        <div key={activePage} className="animate-slide-up flex-1">
+        <div key={activePage} className="animate-fade-in flex-1">
 
           {/* HOME PAGE */}
           {!loading && activePage === 'home' && (
             <div className="flex flex-col items-center">
               <div className="mb-8 text-center">
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
+                <h1 className="text-4xl md:text-5xl font-medium text-gray-900 dark:text-white mb-4 tracking-tight">
                   搜索院校或地区联合群
                 </h1>
                 <p className="text-lg text-gray-500 dark:text-gray-400">
@@ -363,10 +363,10 @@ function App() {
 
               {/* Search Component */}
               <div className="w-full max-w-2xl relative z-30">
-                <div className="flex shadow-lg shadow-brand-500/5 dark:shadow-black/20 rounded-2xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 transition-all focus-within:ring-2 focus-within:ring-brand-500/50 focus-within:border-brand-500">
+                <div className="flex shadow-diffuse-light dark:shadow-diffuse-sm rounded-2xl border border-gray-100 dark:border-transparent bg-white dark:bg-zinc-800 transition-all duration-500 focus-within:bg-gray-50/50 focus-within:border-gray-200 focus-within:dark:bg-[#302E2C] focus-within:dark:border-transparent relative z-30">
 
                   {/* Category Select */}
-                  <div className="relative border-r border-gray-100 dark:border-zinc-700">
+                  <div className="relative border-r border-gray-100 dark:border-white/5">
                     <button
                       className="h-14 px-3 sm:px-5 flex items-center gap-1 sm:gap-2 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-zinc-700/50 rounded-l-2xl transition-colors shrink-0 outline-none"
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -381,7 +381,7 @@ function App() {
                     </button>
 
                     {isDropdownOpen && (
-                      <div className="absolute top-full left-0 mt-2 w-40 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-xl shadow-xl overflow-hidden py-1 animate-zoom-in z-[60]">
+                      <div className="absolute top-full left-0 mt-2 w-40 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-transparent rounded-xl shadow-diffuse-light dark:shadow-diffuse-sm overflow-hidden py-1 animate-fade-in z-[60]">
                         <button
                           className={`w-full text-left px-4 py-3 text-sm flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-zinc-700 ${searchCategory === 'school' ? 'text-brand-600 bg-brand-50/50 dark:bg-brand-900/10' : 'text-gray-700 dark:text-gray-300'}`}
                           onClick={() => { setSearchCategory('school'); setIsDropdownOpen(false); }}
@@ -399,11 +399,11 @@ function App() {
                   </div>
 
                   {/* Input */}
-                  <div className="flex-1 flex items-center px-4 overflow-hidden">
-                    <Search className="text-gray-400 mr-3 shrink-0" size={20} />
+                  <div className="flex-1 flex items-center px-4 gap-2 overflow-hidden">
+                    <Search className="text-gray-400 shrink-0" size={20} />
                     <input
                       type="text"
-                      className="flex-1 h-full bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-400 min-w-0"
+                      className="flex-1 h-full py-4 bg-transparent outline-none text-gray-900 dark:text-white placeholder-gray-500 min-w-0"
                       placeholder={searchCategory === 'school' ? '输入学校名称...' : '输入地区名称...'}
                       value={searchQuery}
                       onChange={(e) => handleSearchChange(e.target.value)}
@@ -424,23 +424,23 @@ function App() {
 
                 {/* Results Dropdown */}
                 {searchQuery && (
-                  <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-zinc-800 rounded-2xl border border-gray-100 dark:border-zinc-700 shadow-xl max-h-[60vh] overflow-y-auto overscroll-contain custom-scrollbar animate-slide-down origin-top z-50">
+                  <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-zinc-800 rounded-2xl border border-gray-100 dark:border-transparent shadow-diffuse-light dark:shadow-diffuse-sm max-h-[60vh] overflow-y-auto overscroll-contain custom-scrollbar animate-fade-in origin-top z-50">
                     {searchLoading && searchResults.length === 0 ? (
                       /* Skeleton shimmer when no previous results */
                       <SearchSkeleton />
                     ) : searchResults.length > 0 ? (
                       <div className={searchLoading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
                         {/* Result count header */}
-                        <div className="px-4 py-2 border-b border-gray-100 dark:border-zinc-700/50 text-xs text-gray-400">
+                        <div className="px-4 py-2 border-b border-gray-100 dark:border-white/5 text-xs text-gray-400">
                           找到 {searchTotal} 个结果
                         </div>
                         {searchResults.map((item: any, i) => (
                           <div
                             key={i}
                             onClick={() => handleResultClick(item)}
-                            className="p-4 hover:bg-gray-50 dark:hover:bg-zinc-700/50 cursor-pointer border-b border-gray-50 dark:border-zinc-700/50 last:border-0 transition-colors"
+                            className="p-4 hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer border-b border-gray-50 dark:border-white/5 last:border-0 transition-colors duration-300"
                           >
-                            <div className="font-semibold text-gray-900 dark:text-white text-base">
+                            <div className="font-medium text-gray-900 dark:text-white text-base">
                               {searchCategory === 'school'
                                 ? renderHighlight((item as SchoolSearchResult).school, searchQuery)
                                 : renderHighlight((item as UnionSearchResult).org, searchQuery)
@@ -478,7 +478,7 @@ function App() {
 
               {/* Announcement */}
               {announcement && (
-                <div className="w-full max-w-2xl bg-brand-50/50 dark:bg-brand-900/10 border border-brand-100 dark:border-brand-900/20 rounded-2xl p-6 mt-8 mb-6 shadow-sm relative z-10">
+                <div className="w-full max-w-2xl bg-white dark:bg-brand-900/10 border border-gray-100 dark:border-brand-900/20 rounded-2xl p-6 mt-8 mb-6 shadow-diffuse-sm-light dark:shadow-sm relative z-10">
                   <Markdown
                     content={announcement}
                     className="text-sm [&_h1]:text-xl [&_h1]:mb-3 [&_ol]:my-1"
@@ -498,7 +498,7 @@ function App() {
                     key={type}
                     onClick={() => setActiveDoc(type)}
                     className={`px-4 py-3 text-sm font-medium border-b-2 transition-all duration-300 ${activeDoc === type
-                      ? 'text-brand-600 dark:text-brand-400 border-brand-500 bg-brand-50/50 dark:bg-brand-900/10 rounded-t-lg'
+                      ? 'text-brand-400 dark:text-brand-400 border-brand-400 bg-white dark:bg-brand-900/10 rounded-t-lg'
                       : 'text-gray-500 border-transparent hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-zinc-600'
                       }`}
                   >
@@ -506,7 +506,7 @@ function App() {
                   </button>
                 ))}
               </div>
-              <div key={activeDoc} className="bg-white dark:bg-zinc-800 p-8 rounded-2xl border border-gray-200 dark:border-zinc-700 shadow-sm animate-zoom-in">
+              <div key={activeDoc} className="bg-white dark:bg-zinc-800 p-8 rounded-2xl border border-gray-100 dark:border-white/5 shadow-diffuse-light dark:shadow-warm-sm animate-fade-in transition-opacity duration-500">
                 <Markdown
                   content={getDocContent(activeDoc)}
                   basePath={activeDoc === 'charter' ? 'joinus/' : ''}
@@ -519,7 +519,7 @@ function App() {
 
           {/* ABOUT PAGE */}
           {!loading && activePage === 'about' && (
-            <div className="bg-white dark:bg-zinc-800 p-8 rounded-2xl border border-gray-200 dark:border-zinc-700 shadow-sm">
+            <div className="bg-white dark:bg-zinc-800 p-8 rounded-2xl border border-gray-100 dark:border-white/5 shadow-diffuse-light dark:shadow-warm-sm">
               {(() => {
                 const content = getAboutContent();
                 const parts = content.split('*四个flex*');
@@ -538,7 +538,7 @@ function App() {
                   <>
                     <Markdown content={content} onOpenRules={() => setRulesModalOpen(true)} />
                     <div className="mt-8 border-t border-gray-200 dark:border-zinc-700 pt-8">
-                      <h3 className="text-center text-xl font-bold mb-6">LinktoFur 团队</h3>
+                      <h3 className="text-center text-xl font-medium mb-6">LinktoFur 团队</h3>
                       <Contributors />
                     </div>
                   </>
@@ -581,28 +581,28 @@ function App() {
         title={selectedItem?.data ? (selectedItem.type === 'school' ? (selectedItem.data as SchoolSearchResult).school : (selectedItem.data as UnionSearchResult).org) : ''}
       >
         {selectedItem?.data && (
-          <div className="space-y-4 text-gray-700 dark:text-gray-300">
+          <div className="space-y-2 text-gray-700 dark:text-gray-300">
             {selectedItem.type === 'school' ? (
               <>
                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
-                  <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">组织名称:</span>
+                  <span className="font-medium w-20 text-gray-900 dark:text-white shrink-0">组织名称:</span>
                   <span>{(selectedItem.data as SchoolSearchResult).org}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
-                  <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">所属地区:</span>
+                  <span className="font-medium w-20 text-gray-900 dark:text-white shrink-0">所属地区:</span>
                   <span>{(selectedItem.data as SchoolSearchResult).region}</span>
                 </div>
               </>
             ) : (
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-2">
-                <span className="font-semibold w-20 text-gray-900 dark:text-white shrink-0">简介:</span>
+                <span className="font-medium w-20 text-gray-900 dark:text-white shrink-0">简介:</span>
                 <span>{(selectedItem.data as UnionSearchResult).intro || '暂无简介'}</span>
               </div>
             )}
 
             {/* Contact info section — loaded on demand */}
-            <div className="pt-4 border-t border-gray-100 dark:border-zinc-700">
-              <span className="block font-semibold mb-2 text-gray-900 dark:text-white">联系方式:</span>
+            <div className="pt-3 mt-4 border-t border-gray-100 dark:border-white/10">
+              <span className="block font-medium mb-2 text-gray-900 dark:text-white">联系方式:</span>
               {detailLoading ? (
                 <div className="flex items-center gap-3 py-4">
                   <Spinner size={18} />
@@ -632,7 +632,7 @@ function App() {
             href="https://docs.qq.com/form/page/DVVZXV09zUUdDUWJs"
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/20"
+            className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-gray-200 dark:border-zinc-500 text-base font-medium rounded-xl text-gray-900 dark:text-zinc-200 bg-transparent hover:bg-brand-50 dark:hover:bg-brand-500/10 hover:border-brand-300 dark:hover:border-brand-300 hover:text-brand-600 dark:hover:text-brand-400 transition-all duration-500"
           >
             我已阅读，前往填写 <ExternalLink size={18} className="ml-2" />
           </a>

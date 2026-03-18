@@ -30,14 +30,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer 
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+        className="absolute inset-0 bg-[#141210]/60 dark:bg-[#141210]/60 backdrop-blur-md transition-opacity" 
         onClick={onClose}
       />
       
       {/* Modal Content */}
-      <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] animate-zoom-in">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-zinc-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
+      <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-700 rounded-2xl shadow-diffuse-light dark:shadow-diffuse border border-gray-100 dark:border-transparent flex flex-col max-h-[90vh] animate-fade-in transition-opacity duration-300">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-white/5">
+          <h2 className="text-xl font-medium text-gray-900 dark:text-zinc-100">{title}</h2>
           <button 
             onClick={onClose}
             className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-zinc-700 transition-colors"
@@ -51,7 +51,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer 
         </div>
 
         {footer && (
-          <div className="p-6 pt-4 border-t border-gray-100 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 rounded-b-2xl">
+          <div className="p-6 pt-4 border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-transparent rounded-b-2xl">
             {footer}
           </div>
         )}

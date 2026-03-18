@@ -8,10 +8,10 @@ const __dirname = path.dirname(__filename);
 async function run() {
     console.log("Starting font split...");
     await fontSplit({
-        FontPath: path.resolve(__dirname, 'public/OPPO Sans 4.0.ttf'),
-        destFold: path.resolve(__dirname, 'public/fonts/oppo-sans'),
+        FontPath: path.resolve(__dirname, 'public/LXGWWenKai-Medium.ttf'),
+        destFold: path.resolve(__dirname, 'public/fonts/lxgw-wenkai'),
         css: {
-            fontFamily: 'OPPO Sans'
+            fontFamily: 'LXGW WenKai'
         }
     });
     console.log("Font split done!");
